@@ -2,17 +2,6 @@ image: python:3.5
 
 stages:
 - test
-- build
-- release
-
-before_script:
-- curl -O https://bootstrap.pypa.io/get-pip.py
-- python get-pip.py
-- pip install -r dev-requirements.txt
-
-after_script:
-- pip install codecov
-- codecov --token=7d117e6b-aab6-4283-ab19-166dafc38cf5
 
 python35:
   image: python:3.5
