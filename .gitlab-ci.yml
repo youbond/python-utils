@@ -26,10 +26,6 @@ pep8:
   stage: test
   script: tox -e pep8
 
-import_order:
-  stage: test
-  script: tox -e import_order
-
 coverage:
   stage: test
   script: tox -e coverage

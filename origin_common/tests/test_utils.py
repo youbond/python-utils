@@ -2,8 +2,8 @@ from datetime import timedelta
 from unittest import TestCase
 
 from origin_common.utils import (
-    DAYS_IN_A_MONTH, DAYS_IN_A_WEEK, DAYS_IN_A_YEAR, join_list, string_to_timedelta, timedelta_to_string,
-    expand_duration_unit,
+    DAYS_IN_A_MONTH, DAYS_IN_A_WEEK, DAYS_IN_A_YEAR, expand_duration_unit, join_list, string_to_timedelta,
+    timedelta_to_string,
 )
 
 
@@ -125,8 +125,8 @@ class TestStringToTimedelta(TestCase):
                 self.assertRaises(ValueError, string_to_timedelta, input_string=input_string), input_string
             else:
                 assert string_to_timedelta(input_string=input_string) == expected, input_string
-        assert string_to_timedelta("1M - 10 Y") == (
-        timedelta(days=1 * DAYS_IN_A_MONTH), timedelta(days=10 * DAYS_IN_A_YEAR))
+        expected = (timedelta(days=1 * DAYS_IN_A_MONTH), timedelta(days=10 * DAYS_IN_A_YEAR))
+        assert string_to_timedelta("1M - 10 Y") == expected
         assert string_to_timedelta("  O/n    - 1Y") == (timedelta(days=1), timedelta(days=1 * DAYS_IN_A_YEAR))
 
     def test_raises_error_for_invalid_ranges(self):
