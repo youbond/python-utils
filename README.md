@@ -1,3 +1,4 @@
-# common
+# Origin Common Code
 
-Common util functions and mixins to make development of other projects easier.
+This module is a collection of util functions and mixins to make development of other projects easier.
+
