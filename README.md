@@ -1,4 +1,5 @@
 # Origin Common Code
+### [![pipeline status](https://git.originmarkets.com:48201/originmarkets/common/badges/master/pipeline.svg)](https://git.originmarkets.com:48201/originmarkets/common/commits/master) [![coverage report](https://git.originmarkets.com:48201/originmarkets/common/badges/master/coverage.svg)](https://git.originmarkets.com:48201/originmarkets/common/commits/master)
 
 This module is a collection of util functions and mixins to make development of other projects easier.
 
