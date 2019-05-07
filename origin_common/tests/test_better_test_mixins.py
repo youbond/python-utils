@@ -72,3 +72,4 @@ class TestSerializerTestMixin(TestCase):
         dummy.setUp()
         dummy.test_all_fields_are_tested()
         # see ma... no errors
+        dummy.test_field_field()

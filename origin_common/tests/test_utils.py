@@ -121,10 +121,7 @@ class TestStringToTimedelta(TestCase):
             "1 - 10 years": (timedelta(days=1 * DAYS_IN_A_YEAR), timedelta(days=10 * DAYS_IN_A_YEAR)),
         }
         for input_string, expected in values.items():
-            if expected is None:
-                self.assertRaises(ValueError, string_to_timedelta, input_string=input_string), input_string
-            else:
-                assert string_to_timedelta(input_string=input_string) == expected, input_string
+            assert string_to_timedelta(input_string=input_string) == expected, input_string
         expected = (timedelta(days=1 * DAYS_IN_A_MONTH), timedelta(days=10 * DAYS_IN_A_YEAR))
         assert string_to_timedelta("1M - 10 Y") == expected
         assert string_to_timedelta("  O/n    - 1Y") == (timedelta(days=1), timedelta(days=1 * DAYS_IN_A_YEAR))
@@ -160,6 +157,7 @@ class TestStringToTimedelta(TestCase):
 class TestTimedeltaToString(TestCase):
     def test_non_initial_units_is_correct(self):
         tenors_to_test = {
+            timedelta(days=0): "0",
             timedelta(days=1): "Overnight",
             timedelta(days=1 * DAYS_IN_A_WEEK): "1 Week",
             timedelta(days=2 * DAYS_IN_A_WEEK): "2 Weeks",
@@ -173,6 +171,7 @@ class TestTimedeltaToString(TestCase):
             assert timedelta_to_string(tenor, only_initial=False) == label
 
     def test_returns_proper_label(self):
+        assert timedelta_to_string(timedelta(days=0)) == "0"
         assert timedelta_to_string(timedelta(days=1)) == "O/N"
         assert timedelta_to_string(timedelta(days=2 * DAYS_IN_A_WEEK)) == "2W"
         assert timedelta_to_string(timedelta(days=6 * DAYS_IN_A_MONTH)) == "6M"
@@ -204,3 +203,7 @@ class TestTimedeltaToString(TestCase):
 
     def test_returns_none_unchanged(self):
         assert timedelta_to_string(None) is None
+
+    def test_can_round_to_n_digits(self):
+        t = string_to_timedelta("10.234Y")
+        assert timedelta_to_string(t, round_ndigits=3, only_quarter_years=False) == "10.234Y"

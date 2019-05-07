@@ -21,11 +21,9 @@ def expand_duration_unit(unit):
     return unit
 
 
-def get_duration_units(duration, round_ndigits=None, only_quarter_years=True):
+def __get_duration_units(duration, round_ndigits=None, only_quarter_years=True):
     total_days = duration.total_seconds() / SECONDS_IN_A_DAY
-    if total_days == 0:
-        value, units = 0.0, "Y"
-    elif total_days < DAYS_IN_A_MONTH:
+    if total_days < DAYS_IN_A_MONTH:
         value, units = (total_days // DAYS_IN_A_WEEK), "W"
     elif total_days < DAYS_IN_A_YEAR or (only_quarter_years and duration % timedelta(days=3 * DAYS_IN_A_MONTH)):
         value, units = (total_days / DAYS_IN_A_MONTH), "M"
@@ -38,13 +36,11 @@ def get_duration_units(duration, round_ndigits=None, only_quarter_years=True):
     return units, value
 
 
-def get_number_of_day(units):
+def __get_number_of_day(units):
     """Given units, return the number of days as a float."""
     multiplier = DAYS_IN_A_YEAR
     if units:
-        if units.upper() == "O/N" or units.lower() == "overnight":
-            multiplier = 1  # day
-        elif units.lower().startswith('w'):
+        if units.lower().startswith('w'):
             multiplier = DAYS_IN_A_WEEK
         elif units.lower().startswith('m'):
             multiplier = DAYS_IN_A_MONTH
@@ -77,7 +73,7 @@ def string_to_timedelta(input_string, return_units=False):
         end, end_unit = string_to_timedelta(split_input[1], return_units=True)
 
         if start_unit is None:
-            total_days = start.total_seconds() / SECONDS_IN_A_DAY / DAYS_IN_A_YEAR * get_number_of_day(end_unit)
+            total_days = start.total_seconds() / SECONDS_IN_A_DAY / DAYS_IN_A_YEAR * __get_number_of_day(end_unit)
             start = timedelta(days=total_days)
         if end < start:
             raise ValueError('Invalid input "{}"!'.format(input_string))
@@ -94,7 +90,7 @@ def string_to_timedelta(input_string, return_units=False):
 
     period_start, units = match.groups()
 
-    multiplier = get_number_of_day(units)
+    multiplier = __get_number_of_day(units)
     if return_units:
         return timedelta(days=float(period_start) * multiplier), units
     return timedelta(days=float(period_start) * multiplier)
@@ -106,6 +102,8 @@ def timedelta_to_string(duration, only_initial=True, round_ndigits=None, only_qu
         return duration
     if duration is None:
         return None
+    if not duration:
+        return "0"  # no units for 0
     if duration == timedelta(days=1):
         if for_quantlib:
             return "1D"
@@ -113,7 +111,7 @@ def timedelta_to_string(duration, only_initial=True, round_ndigits=None, only_qu
             return "O/N"
         return "Overnight"
 
-    units, value = get_duration_units(duration, round_ndigits, only_quarter_years)
+    units, value = __get_duration_units(duration, round_ndigits, only_quarter_years)
     if for_quantlib and isinstance(value, float):
         int_part, decimal_part = str(value).split(".")
         return "{}{}".format(
