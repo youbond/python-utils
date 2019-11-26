@@ -8,11 +8,8 @@ class Field:
 
 
 class TestSerializerTestMixin(TestCase):
-
     class Serializer:
-        fields = {
-            "field": Field()
-        }
+        fields = {"field": Field()}
 
     class OtherObject:
         field = Field()
@@ -40,13 +37,17 @@ class TestSerializerTestMixin(TestCase):
 
         dummy_test_case2 = DummyTestCase2()
         dummy_test_case2.setUp()
-        msg = "'{}' does not have any fields to test.".format(dummy_test_case2.serializer)
+        msg = "'{}' does not have any fields to test.".format(
+            dummy_test_case2.serializer
+        )
         with self.assertRaises(AssertionError, msg=msg):
             dummy_test_case2.test_all_fields_are_tested()
 
         dummy_test_case3 = DummyTestCase3()
         dummy_test_case3.setUp()
-        msg = "'{}' does not have any fields to test.".format(dummy_test_case3.serializer)
+        msg = "'{}' does not have any fields to test.".format(
+            dummy_test_case3.serializer
+        )
         with self.assertRaises(AssertionError, msg=msg):
             dummy_test_case3.test_all_fields_are_tested()
 
@@ -57,7 +58,9 @@ class TestSerializerTestMixin(TestCase):
 
         dummy = Dummy()
         dummy.setUp()
-        with self.assertRaises(AssertionError, msg="Tests are missing for the following fields: field."):
+        with self.assertRaises(
+            AssertionError, msg="Tests are missing for the following fields: field."
+        ):
             dummy.test_all_fields_are_tested()
 
     def test_no_errors_if_all_fields_are_tested(self):

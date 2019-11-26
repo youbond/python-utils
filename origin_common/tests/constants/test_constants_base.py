@@ -1,0 +1,82 @@
+from unittest import TestCase
+
+from origin_common.constants.base import Constant, Constants
+
+
+class TestConstant(TestCase):
+    def test_str(self):
+        const = Constant(value=123, label="Foo")
+        assert str(const) == "value=123, label=Foo"
+
+    def test_representation(self):
+        const = Constant(value=123, label="Foo")
+        assert repr(const) == "<Constant: {} at {}>".format(const, hex(id(const)))
+
+
+class TestConstants(TestCase):
+    def test_is_singleton(self):
+        constants1 = Constants()
+        constants2 = Constants()
+        assert constants1 is constants2
+
+    def test_can_iterate_over_constants(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+            c2 = Constant(2, "two")
+            c3 = Constant(2, "two")
+            c4 = Constant(2, "two")
+
+        assert list(Dummy()) == [Dummy.c1, Dummy.c2, Dummy.c3, Dummy.c4]
+
+    def test_can_check_if_value_is_in_constants(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+
+        dummy = Dummy()
+        assert 1 in dummy
+        assert 2 not in dummy
+
+    def test_can_check_if_constant_is_in_constants(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+
+        c2 = Constant("other", "Other")
+        dummy = Dummy()
+        assert Dummy.c1 in dummy
+        assert c2 not in dummy
+
+    def test_can_get_constant_by_value(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+            c2 = Constant("foo", "Foo bar")
+
+        dummy = Dummy()
+        assert dummy[1] is Dummy.c1
+        assert dummy["foo"] is Dummy.c2
+        with self.assertRaises(KeyError):
+            assert dummy[2]
+
+    def test_getting_costant_using_constant(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+
+        c2 = Constant("foo", "Foo bar")
+
+        dummy = Dummy()
+        assert dummy[dummy.c1] is Dummy.c1
+        with self.assertRaises(KeyError):
+            assert dummy[c2]
+
+    def test_get_label_from_value(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+
+        dummy = Dummy()
+        assert dummy.get_label(1) == "one"
+
+    def test_get_value_from_label(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+
+        dummy = Dummy()
+        assert dummy.get_value("one") == 1
