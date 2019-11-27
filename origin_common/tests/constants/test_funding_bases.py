@@ -1,13 +1,13 @@
 from unittest import TestCase
 
 from origin_common.constants import (
-    FUNDING_BASES,
-    PAYMENT_FREQUENCIES,
-    DAY_COUNTS,
     ADJUSTMENTS,
     BUSINESS_DAY_CONVENTIONS,
-    MTN_FUNDING_BASES,
     CD_FUNDING_BASES,
+    DAY_COUNTS,
+    FUNDING_BASES,
+    MTN_FUNDING_BASES,
+    PAYMENT_FREQUENCIES,
 )
 
 

@@ -20,6 +20,7 @@ class TestConstants(TestCase):
 
         class Dummy2(Constants):
             pass
+
         constants1 = Dummy1()
         constants2 = Dummy1()
         assert constants1 is constants2
