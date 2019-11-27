@@ -258,5 +258,7 @@ class TestTimedeltaToString(TestCase):
 
     def test_can_round_to_n_digits(self):
         t = string_to_timedelta("10.234Y")
-        timedelta_string = timedelta_to_string(t, round_ndigits=3, only_quarter_years=False)
+        timedelta_string = timedelta_to_string(
+            t, round_ndigits=3, only_quarter_years=False
+        )
         assert timedelta_string == "10.234Y"

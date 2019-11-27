@@ -1,7 +1,7 @@
 from origin_common.constants.base import Constant, Constants
 
 
-class BusinessDayConvention(Constant):
+class BusinessDayConvention(Constant[str]):
     def __init__(self, value: str):
         super().__init__(value, value)
 

@@ -1,7 +1,7 @@
 from origin_common.constants.base import Constant, Constants
 
 
-class Adjustment(Constant):
+class Adjustment(Constant[str]):
     def __init__(self, value: str):
         super().__init__(value, value)
 

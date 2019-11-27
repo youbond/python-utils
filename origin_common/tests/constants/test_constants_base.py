@@ -15,9 +15,16 @@ class TestConstant(TestCase):
 
 class TestConstants(TestCase):
     def test_is_singleton(self):
-        constants1 = Constants()
-        constants2 = Constants()
+        class Dummy1(Constants):
+            pass
+
+        class Dummy2(Constants):
+            pass
+        constants1 = Dummy1()
+        constants2 = Dummy1()
         assert constants1 is constants2
+        constants3 = Dummy2()
+        assert constants1 is not constants3
 
     def test_can_iterate_over_constants(self):
         class Dummy(Constants):
@@ -56,7 +63,7 @@ class TestConstants(TestCase):
         with self.assertRaises(KeyError):
             assert dummy[2]
 
-    def test_getting_costant_using_constant(self):
+    def test_getting_constant_using_constant(self):
         class Dummy(Constants):
             c1 = Constant(1, "one")
 
@@ -80,3 +87,17 @@ class TestConstants(TestCase):
 
         dummy = Dummy()
         assert dummy.get_value("one") == 1
+
+    def test_length(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+
+        class Dummy2(Constants):
+            c1 = Constant(1, "one")
+            c2 = Constant(2, "two")
+            c3 = Constant(3, "three")
+
+        dummy1 = Dummy()
+        dummy2 = Dummy2()
+        assert len(dummy1) == 1
+        assert len(dummy2) == 3

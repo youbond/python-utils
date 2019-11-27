@@ -1,9 +1,8 @@
 from origin_common.constants.base import Constant, Constants
 
 
-class PaymentFrequency(Constant):
-    def __init__(self, value: int, label: str):
-        super().__init__(value, label)
+class PaymentFrequency(Constant[int]):
+    pass
 
 
 class PaymentFrequencies(Constants):
