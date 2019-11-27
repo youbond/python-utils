@@ -5,7 +5,7 @@ setup(
     version="0.0.2",
     description="Common util functions and mixins to make development "
     "of other projects easier.",
-    url="https://git.originmarkets.com:48201/originmarkets/common",
+    url="https://git.originmarkets.com:48201/originmarkets/origin-common",
     packages=["origin_common"],
     zip_safe=True,
     tests_require=["tox"],

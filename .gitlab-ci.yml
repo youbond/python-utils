@@ -1,4 +1,4 @@
-image: python:3.5
+image: python:3.8
 
 stages:
 - test
@@ -18,13 +18,22 @@ python36:
   script: tox -e py36
 
 python37:
-  image: python:3.7-rc
+  image: python:3.7
   stage: test
   script: tox -e py37
 
-pep8:
+python38:
+  image: python:3.8
   stage: test
-  script: tox -e pep8
+  script: tox -e py38
+
+black:
+  stage: test
+  script: tox -e black
+
+isort:
+  stage: test
+  script: tox -e isort
 
 coverage:
   stage: test
