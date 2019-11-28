@@ -12,6 +12,14 @@ from origin_common.constants.payment_frequencies import (
     PaymentFrequency,
 )
 
+BASIS_TYPE_GOVIE = "govie"
+
+BASIS_TYPE_MS = "ms"
+
+BASIS_TYPE_FIXED = "fixed"
+
+BASIS_TYPE_FLOATING = "floating"
+
 
 class FundingBasis(Constant[str]):
     def __init__(
@@ -46,6 +54,14 @@ class FundingBasis(Constant[str]):
     def is_floating_basis(self):
         return False
 
+    @property
+    def is_ms_basis(self):
+        return False
+
+    @property
+    def is_govie_basis(self):
+        return False
+
     def get_swap_config(self):
         # should this live here or in bankangle?
         return {
@@ -62,7 +78,7 @@ class FundingBasis(Constant[str]):
 class FloatingFundingBasis(FundingBasis):
     def __init__(self, *args, index: int, screen_page: str, legal_label: str, **kwargs):
         super().__init__(*args, **kwargs)
-        self.basis_type = "floating"
+        self.basis_type = BASIS_TYPE_FLOATING
         self.index = index
         self.screen_page = screen_page
         self.is_callable_basis = True
@@ -76,7 +92,7 @@ class FloatingFundingBasis(FundingBasis):
 class FixedFundingBasis(FundingBasis):
     def __init__(self, *args, legal_label: str, **kwargs):
         super().__init__(*args, **kwargs)
-        self.basis_type = "fixed"
+        self.basis_type = BASIS_TYPE_FIXED
         self.index = 0
         self.legal_label = legal_label
 
@@ -88,17 +104,25 @@ class FixedFundingBasis(FundingBasis):
 class MSFundingBasis(FundingBasis):
     def __init__(self, *args, display_payment_frequency: PaymentFrequency, **kwargs):
         super().__init__(*args, **kwargs)
-        self.basis_type = "ms"
+        self.basis_type = BASIS_TYPE_MS
         self.index = 0
         self.display_payment_frequency = display_payment_frequency
+
+    @property
+    def is_ms_basis(self):
+        return True
 
 
 class GovieFundingBasis(FundingBasis):
     def __init__(self, *args, issuer_short_name: str, **kwargs):
         super().__init__(*args, **kwargs)
-        self.basis_type = "govie"
+        self.basis_type = BASIS_TYPE_GOVIE
         self.index = 0
         self.issuer_short_name = issuer_short_name
+
+    @property
+    def is_govie_basis(self):
+        return False
 
 
 class FundingBases(Constants[FundingBasis]):

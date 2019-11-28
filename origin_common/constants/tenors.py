@@ -30,8 +30,9 @@ class Tenor(Constant[timedelta]):
         elif duration_unit == "Y":
             return float(number) * DAYS_IN_A_YEAR / DAYS_IN_A_MONTH
         elif duration_unit == "W":
-            return float(
-                number) * DAYS_IN_A_WEEK / DAYS_IN_A_MONTH  # 1 week is 7/30 months
+            return (
+                float(number) * DAYS_IN_A_WEEK / DAYS_IN_A_MONTH
+            )  # 1 week is 7/30 months
         else:
             raise Exception("Invalid tenor")
 
