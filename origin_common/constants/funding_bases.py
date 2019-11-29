@@ -908,7 +908,7 @@ class CDFundingBases(FundingBases):
             legal_label="Fixed Rate USD",
             sorting=60,
         )
-        self.USD_FIXED._creation_counter = original_counter
+        self._ordered_fields[original_counter] = self.USD_FIXED
 
 
 MTN_FUNDING_BASES = MTNFundingBases()

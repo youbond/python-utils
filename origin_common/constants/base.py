@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from typing import Dict, Generator, Generic, Set, Tuple, TypeVar, Union
 
 T = TypeVar("T")
@@ -41,19 +42,20 @@ class Constants(Generic[C]):
     def __new__(cls, *args, **kwargs):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls, *args, **kwargs)
-            cls.__ordered_fields = sorted(
-                (
-                    getattr(cls, attr_name)
-                    for attr_name in dir(cls)
-                    if not attr_name.startswith("_")
-                    and isinstance(getattr(cls, attr_name), Constant)
-                ),
-                key=lambda const: const._creation_counter,
+            fields = [
+                getattr(cls, attr_name)
+                for attr_name in dir(cls)
+                if not attr_name.startswith("_")
+                and isinstance(getattr(cls, attr_name), Constant)
+            ]
+
+            cls._ordered_fields = OrderedDict(
+                sorted(((f._creation_counter, f) for f in fields), key=lambda i: i[0])
             )
         return cls.__instance
 
     def __iter__(self) -> Generator[C, None, None]:
-        for field in self.__ordered_fields:
+        for field in self._ordered_fields.values():
             yield field
 
     def __getitem__(self, item: Union[C, T]) -> C:
