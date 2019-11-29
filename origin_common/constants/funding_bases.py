@@ -45,6 +45,8 @@ class FundingBasis(Constant[str]):
         self.business_day_convention = business_day_convention
         self.pricing = pricing
         self.is_callable_basis = False
+        self.index = 0
+        self.basis_type = None  # overridden in child classes
 
     @property
     def is_fixed_basis(self):
@@ -93,7 +95,6 @@ class FixedFundingBasis(FundingBasis):
     def __init__(self, *args, legal_label: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.basis_type = BASIS_TYPE_FIXED
-        self.index = 0
         self.legal_label = legal_label
 
     @property
@@ -105,7 +106,6 @@ class MSFundingBasis(FundingBasis):
     def __init__(self, *args, display_payment_frequency: PaymentFrequency, **kwargs):
         super().__init__(*args, **kwargs)
         self.basis_type = BASIS_TYPE_MS
-        self.index = 0
         self.display_payment_frequency = display_payment_frequency
 
     @property
@@ -117,7 +117,6 @@ class GovieFundingBasis(FundingBasis):
     def __init__(self, *args, issuer_short_name: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.basis_type = BASIS_TYPE_GOVIE
-        self.index = 0
         self.issuer_short_name = issuer_short_name
 
     @property
