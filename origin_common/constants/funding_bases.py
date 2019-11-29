@@ -233,7 +233,7 @@ class FundingBases(Constants[FundingBasis]):
     )
 
     GBP_SONIA = FloatingFundingBasis(
-        value="SONIA_GBP",
+        value="SONIA",
         currency="GBP",
         symbol="£",
         index=0,

@@ -224,11 +224,11 @@ class TestUSDMSBasis(BasisTestCase):
     }
 
 
-class TestGBPSONIABasis(BasisTestCase):
+class TestGBPSoniaBasis(BasisTestCase):
     basis = FUNDING_BASES.GBP_SONIA
     is_floating_basis = True
     attributes = {
-        "value": "SONIA_GBP",
+        "value": "SONIA",
         "currency": "GBP",
         "symbol": "£",
         "basis_type": "floating",
