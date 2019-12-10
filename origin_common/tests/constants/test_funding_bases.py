@@ -24,6 +24,8 @@ class BasisTestCase(TestCase):
     basis = None
     is_fixed_basis = False
     is_floating_basis = False
+    is_ms_basis = False
+    is_govie_basis = False
 
     def test_attributes(self):
         if not self.attributes:
@@ -40,6 +42,14 @@ class BasisTestCase(TestCase):
     def test_is_floating_basis(self):
         if self.basis:
             assert self.basis.is_floating_basis is self.is_floating_basis
+
+    def test_is_ms_basis(self):
+        if self.basis:
+            assert self.basis.is_ms_basis is self.is_ms_basis
+
+    def test_is_govie_basis(self):
+        if self.basis:
+            assert self.basis.is_govie_basis is self.is_govie_basis
 
 
 class TestEUR3mBasis(BasisTestCase):
@@ -106,6 +116,7 @@ class TestEURFixedBasis(BasisTestCase):
 
 class TestEURMSBasis(BasisTestCase):
     basis = FUNDING_BASES.EUR_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_EUR",
         "currency": "EUR",
@@ -207,6 +218,7 @@ class TestUSDFixedBasisForCD(BasisTestCase):
 
 class TestUSDMSBasis(BasisTestCase):
     basis = FUNDING_BASES.USD_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_USD",
         "currency": "USD",
@@ -310,6 +322,7 @@ class TestGBPFIXEDBasis(BasisTestCase):
 
 class TestGBPMSBasis(BasisTestCase):
     basis = FUNDING_BASES.GBP_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_GBP",
         "currency": "GBP",
@@ -391,6 +404,7 @@ class TestJPYFIXEDBasis(BasisTestCase):
 
 class TestJPYMSBasis(BasisTestCase):
     basis = FUNDING_BASES.JPY_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_JPY",
         "currency": "JPY",
@@ -472,6 +486,7 @@ class TestCHFFIXEDBasis(BasisTestCase):
 
 class TestCHFMSBasis(BasisTestCase):
     basis = FUNDING_BASES.CHF_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_CHF",
         "currency": "CHF",
@@ -553,6 +568,7 @@ class TestAUDFIXEDBasis(BasisTestCase):
 
 class TestAUDMSBasis(BasisTestCase):
     basis = FUNDING_BASES.AUD_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_AUD",
         "currency": "AUD",
@@ -613,6 +629,7 @@ class TestSEKFIXEDBasis(BasisTestCase):
 
 class TestSEKMSBasis(BasisTestCase):
     basis = FUNDING_BASES.SEK_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_SEK",
         "currency": "SEK",
@@ -694,6 +711,7 @@ class TestNOKFIXEDBasis(BasisTestCase):
 
 class TestNOKMSBasis(BasisTestCase):
     basis = FUNDING_BASES.NOK_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_NOK",
         "currency": "NOK",
@@ -754,6 +772,7 @@ class TestCADFIXEDBasis(BasisTestCase):
 
 class TestCADMSBasis(BasisTestCase):
     basis = FUNDING_BASES.CAD_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_CAD",
         "currency": "CAD",
@@ -814,6 +833,7 @@ class TestNZDFIXEDBasis(BasisTestCase):
 
 class TestNZDMSBasis(BasisTestCase):
     basis = FUNDING_BASES.NZD_MS
+    is_ms_basis = True
     attributes = {
         "value": "MS_NZD",
         "currency": "NZD",
@@ -1115,6 +1135,7 @@ class TestZARFIXEDBasis(BasisTestCase):
 
 class TestBTPBasis(BasisTestCase):
     basis = FUNDING_BASES.BTP
+    is_govie_basis = True
     attributes = {
         "value": "BTP",
         "currency": "EUR",
@@ -1136,6 +1157,7 @@ class TestBTPBasis(BasisTestCase):
 
 class TestOATBasis(BasisTestCase):
     basis = FUNDING_BASES.OAT
+    is_govie_basis = True
     attributes = {
         "value": "OAT",
         "currency": "EUR",
@@ -1157,6 +1179,7 @@ class TestOATBasis(BasisTestCase):
 
 class TestOLOBasis(BasisTestCase):
     basis = FUNDING_BASES.OLO
+    is_govie_basis = True
     attributes = {
         "value": "OLO",
         "currency": "EUR",
@@ -1178,6 +1201,7 @@ class TestOLOBasis(BasisTestCase):
 
 class TestRAGBBasis(BasisTestCase):
     basis = FUNDING_BASES.RAGB
+    is_govie_basis = True
     attributes = {
         "value": "RAGB",
         "currency": "EUR",
@@ -1199,6 +1223,7 @@ class TestRAGBBasis(BasisTestCase):
 
 class TestSPGBBasis(BasisTestCase):
     basis = FUNDING_BASES.SPGB
+    is_govie_basis = True
     attributes = {
         "value": "SPGB",
         "currency": "EUR",

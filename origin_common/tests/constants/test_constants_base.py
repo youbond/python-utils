@@ -94,6 +94,13 @@ class TestConstants(TestCase):
         dummy = Dummy()
         assert dummy.get_value("one") == 1
 
+    def test_get_constant_from_label(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+
+        dummy = Dummy()
+        assert dummy.get_by_label("one") is dummy.c1
+
     def test_length(self):
         class Dummy(Constants):
             c1 = Constant(1, "one")

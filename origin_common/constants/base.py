@@ -89,10 +89,13 @@ class Constants(Generic[C]):
         return tuple((attr.value, attr.label) for attr in self)
 
     def get_value(self, label: str) -> T:
-        return self._label_to_object_mapping[label].value
+        return self.get_by_label(label).value
 
     def get_label(self, value: T) -> str:
         return self._value_to_object_mapping[value].label
+
+    def get_by_label(self, label: str) -> C:
+        return self._label_to_object_mapping[label]
 
     @property
     def _values(self) -> Set[C]:

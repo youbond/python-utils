@@ -103,9 +103,10 @@ class FixedFundingBasis(FundingBasis):
 
 
 class MSFundingBasis(FundingBasis):
-    def __init__(self, *args, display_payment_frequency: PaymentFrequency, **kwargs):
+    def __init__(self, *args, floating_basis: FloatingFundingBasis, display_payment_frequency: PaymentFrequency, **kwargs):
         super().__init__(*args, **kwargs)
         self.basis_type = BASIS_TYPE_MS
+        self.floating_basis = floating_basis
         self.display_payment_frequency = display_payment_frequency
 
     @property
@@ -121,7 +122,7 @@ class GovieFundingBasis(FundingBasis):
 
     @property
     def is_govie_basis(self):
-        return False
+        return True
 
 
 class FundingBases(Constants[FundingBasis]):
@@ -171,6 +172,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="EUR",
         symbol="€",
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
+        floating_basis=EUR_6M,
         display_payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.THIRTY_360,
         adjustment=ADJUSTMENTS.ADJUSTED,
@@ -224,6 +226,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="USD",
         symbol="$",
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        floating_basis=USD_3M,
         display_payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.THIRTY_360,
         adjustment=ADJUSTMENTS.ADJUSTED,
@@ -291,6 +294,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="GBP",
         symbol="£",
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        floating_basis=GBP_6M,
         display_payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         adjustment=ADJUSTMENTS.ADJUSTED,
@@ -343,6 +347,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="JPY",
         symbol="JPY",
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        floating_basis=JPY_6M,
         display_payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365_NL,
         sorting=150,
@@ -395,6 +400,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="CHF",
         symbol="CHF",
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
+        floating_basis=CHF_6M,
         display_payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.THIRTY_360,
         sorting=190,
@@ -447,6 +453,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="AUD",
         symbol="AUD",
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        floating_basis=AUD_3M,
         display_payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=230,
@@ -485,6 +492,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="SEK",
         symbol="SEK",
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
+        floating_basis=SEK_3M,
         display_payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.THIRTY_360,
         sorting=260,
@@ -537,6 +545,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="NOK",
         symbol="NOK",
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
+        floating_basis=NOK_6M,
         display_payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.THIRTY_360,
         sorting=300,
@@ -575,6 +584,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="CAD",
         symbol="CAD",
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        floating_basis=CAD_3M,
         display_payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=330,
@@ -613,6 +623,7 @@ class FundingBases(Constants[FundingBasis]):
         currency="NZD",
         symbol="NZD",
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        floating_basis=NZD_3M,
         display_payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=360,
