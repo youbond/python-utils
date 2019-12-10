@@ -26,6 +26,18 @@ class Constant(Generic[T]):
             self.__class__.__name__, str(self), hex(id(self))
         )
 
+    def __eq__(self, other):
+        if type(self) == type(other):
+            return hash(self) == hash(other)
+        return self.value == other
+
+    def __hash__(self) -> int:
+        return hash(
+            tuple(
+                value for key, value in self.__dict__.items() if not key.startswith("_")
+            )
+        )
+
 
 C = TypeVar("C", bound=Constant)
 

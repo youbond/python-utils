@@ -42,9 +42,9 @@ class TestDayCountOrder(TestCase):
         expected = [
             DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
             DAY_COUNTS.ACTUAL_365,
-            DAY_COUNTS.ACTUAL_365_NL,
             DAY_COUNTS.THIRTY_360,
             DAY_COUNTS.ACTUAL_360,
+            DAY_COUNTS.ACTUAL_365_NL,
         ]
         assert list(DAY_COUNTS) == expected
 
@@ -52,8 +52,8 @@ class TestDayCountOrder(TestCase):
         expected = (
             (DAY_COUNTS.ACTUAL_ACTUAL_ICMA.value, DAY_COUNTS.ACTUAL_ACTUAL_ICMA.label),
             (DAY_COUNTS.ACTUAL_365.value, DAY_COUNTS.ACTUAL_365.label),
-            (DAY_COUNTS.ACTUAL_365_NL.value, DAY_COUNTS.ACTUAL_365_NL.label),
             (DAY_COUNTS.THIRTY_360.value, DAY_COUNTS.THIRTY_360.label),
             (DAY_COUNTS.ACTUAL_360.value, DAY_COUNTS.ACTUAL_360.label),
+            (DAY_COUNTS.ACTUAL_365_NL.value, DAY_COUNTS.ACTUAL_365_NL.label),
         )
         assert DAY_COUNTS.to_django_choices() == expected

@@ -12,6 +12,11 @@ class TestConstant(TestCase):
         const = Constant(value=123, label="Foo")
         assert repr(const) == "<Constant: {} at {}>".format(const, hex(id(const)))
 
+    def test_equality(self):
+        const = Constant(value=123, label="Foo")
+        assert const == const
+        assert const == 123
+
 
 class TestConstants(TestCase):
     def test_is_singleton(self):
