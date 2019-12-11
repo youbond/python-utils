@@ -94,8 +94,8 @@ class TestEUR6mBasis(BasisTestCase):
     }
 
 
-class TestEURFixedBasis(BasisTestCase):
-    basis = FUNDING_BASES.EUR_FIXED
+class TestEURFixedBasisForMTN(BasisTestCase):
+    basis = MTN_FUNDING_BASES.EUR_FIXED
     is_fixed_basis = True
     attributes = {
         "value": "FIXED_EUR",
@@ -110,6 +110,26 @@ class TestEURFixedBasis(BasisTestCase):
         "is_callable_basis": False,
         "adjustment": ADJUSTMENTS.UNADJUSTED,
         "business_day_convention": BUSINESS_DAY_CONVENTIONS.FOLLOWING,
+        "legal_label": "Fixed Rate EUR",
+    }
+
+
+class TestEURFixedBasisForCD(BasisTestCase):
+    basis = CD_FUNDING_BASES.EUR_FIXED
+    is_fixed_basis = True
+    attributes = {
+        "value": "FIXED_EUR",
+        "currency": "EUR",
+        "symbol": "€",
+        "basis_type": "fixed",
+        "index": 0,
+        "payment_frequency": PAYMENT_FREQUENCIES.ANNUALLY,
+        "day_count": DAY_COUNTS.ACTUAL_360,
+        "sorting": 20,
+        "label": "EUR Fixed",
+        "is_callable_basis": False,
+        "adjustment": ADJUSTMENTS.ADJUSTED,
+        "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         "legal_label": "Fixed Rate EUR",
     }
 
@@ -300,8 +320,8 @@ class TestGBP6MBasis(BasisTestCase):
     }
 
 
-class TestGBPFIXEDBasis(BasisTestCase):
-    basis = FUNDING_BASES.GBP_FIXED
+class TestGBPFIXEDBasisForMTN(BasisTestCase):
+    basis = MTN_FUNDING_BASES.GBP_FIXED
     is_fixed_basis = True
     attributes = {
         "value": "FIXED_GBP",
@@ -316,6 +336,26 @@ class TestGBPFIXEDBasis(BasisTestCase):
         "is_callable_basis": False,
         "adjustment": ADJUSTMENTS.UNADJUSTED,
         "business_day_convention": BUSINESS_DAY_CONVENTIONS.FOLLOWING,
+        "legal_label": "Fixed Rate GBP",
+    }
+
+
+class TestGBPFIXEDBasisForCD(BasisTestCase):
+    basis = CD_FUNDING_BASES.GBP_FIXED
+    is_fixed_basis = True
+    attributes = {
+        "value": "FIXED_GBP",
+        "currency": "GBP",
+        "symbol": "£",
+        "basis_type": "fixed",
+        "index": 0,
+        "payment_frequency": PAYMENT_FREQUENCIES.ANNUALLY,
+        "day_count": DAY_COUNTS.ACTUAL_365_NL,
+        "sorting": 100,
+        "label": "GBP Fixed",
+        "is_callable_basis": False,
+        "adjustment": ADJUSTMENTS.ADJUSTED,
+        "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         "legal_label": "Fixed Rate GBP",
     }
 

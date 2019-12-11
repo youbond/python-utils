@@ -911,7 +911,6 @@ class MTNFundingBases(FundingBases):
 class CDFundingBases(FundingBases):
     def __init__(self):
         super().__init__()
-        original_counter = self.USD_FIXED._creation_counter
         self.USD_FIXED = FixedFundingBasis(
             value="FIXED_USD",
             label="USD Fixed",
@@ -924,7 +923,30 @@ class CDFundingBases(FundingBases):
             legal_label="Fixed Rate USD",
             sorting=60,
         )
-        self._ordered_fields[original_counter] = self.USD_FIXED
+        self.EUR_FIXED = FixedFundingBasis(
+            value="FIXED_EUR",
+            label="EUR Fixed",
+            currency="EUR",
+            symbol="€",
+            payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
+            day_count=DAY_COUNTS.ACTUAL_360,
+            adjustment=ADJUSTMENTS.ADJUSTED,
+            business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+            legal_label="Fixed Rate EUR",
+            sorting=20,
+        )
+        self.GBP_FIXED = FixedFundingBasis(
+            value="FIXED_GBP",
+            currency="GBP",
+            symbol="£",
+            payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
+            day_count=DAY_COUNTS.ACTUAL_365_NL,
+            sorting=100,
+            label="GBP Fixed",
+            adjustment=ADJUSTMENTS.ADJUSTED,
+            business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+            legal_label="Fixed Rate GBP",
+        )
 
 
 MTN_FUNDING_BASES = MTNFundingBases()

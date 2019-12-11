@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Dict, Generator, Generic, Set, Tuple, TypeVar, Union
+from typing import Any, Dict, Generator, Generic, Set, Tuple, TypeVar, Union
 
 T = TypeVar("T")
 
@@ -82,8 +82,15 @@ class Constants(Generic[C]):
             return item in self._values
         return item in self._value_to_object_mapping
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._values)
+
+    def __setattr__(self, key: str, value: Any) -> None:
+        if not key.startswith("_") and hasattr(value, "_creation_counter"):
+            if hasattr(self, key):
+                original_counter = getattr(self, key)._creation_counter
+                self._ordered_fields[original_counter] = value
+        super().__setattr__(key, value)
 
     def to_django_choices(self) -> Tuple[Tuple[T, str]]:
         return tuple((attr.value, attr.label) for attr in self)
