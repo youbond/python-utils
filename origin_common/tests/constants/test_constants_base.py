@@ -6,7 +6,12 @@ from origin_common.constants.base import Constant, Constants
 class TestConstant(TestCase):
     def test_str(self):
         const = Constant(value=123, label="Foo")
-        assert str(const) == "value=123, label=Foo"
+        expected_possibilities = {
+            # python 3.5 doesn't maintain the order
+            "value=123, label=Foo",
+            "label=Foo, value=123",
+        }
+        assert str(const) in expected_possibilities
 
     def test_representation(self):
         const = Constant(value=123, label="Foo")

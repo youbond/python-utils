@@ -103,7 +103,13 @@ class FixedFundingBasis(FundingBasis):
 
 
 class MSFundingBasis(FundingBasis):
-    def __init__(self, *args, floating_basis: FloatingFundingBasis, display_payment_frequency: PaymentFrequency, **kwargs):
+    def __init__(
+        self,
+        *args,
+        floating_basis: FloatingFundingBasis,
+        display_payment_frequency: PaymentFrequency,
+        **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.basis_type = BASIS_TYPE_MS
         self.floating_basis = floating_basis
