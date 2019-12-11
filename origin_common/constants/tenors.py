@@ -40,7 +40,7 @@ class Tenor(Constant[timedelta]):
     def is_callable_tenor(self):
         return (
             self.value >= ONE_YEAR_TIMEDELTA
-            or self.value % THREE_MONTH_TIMEDELTA.days == 0
+            or (self.value % THREE_MONTH_TIMEDELTA).days == 0
             or self.value == ONE_MONTH_TIMEDELTA
         )
 
@@ -111,3 +111,6 @@ class Tenors(Constants[Tenor]):
     FORTY_EIGHT_YEAR = Tenor(timedelta(days=48 * DAYS_IN_A_YEAR), "48Y", "#2C7326")
     FORTY_NINE_YEAR = Tenor(timedelta(days=49 * DAYS_IN_A_YEAR), "49Y", "#C3F73A")
     FIFTY_YEAR = Tenor(timedelta(days=50 * DAYS_IN_A_YEAR), "50Y", "#226453")
+
+
+TENORS = Tenors()

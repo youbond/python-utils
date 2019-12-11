@@ -11,3 +11,4 @@ from origin_common.constants.funding_bases import (
     MTN_FUNDING_BASES,
 )
 from origin_common.constants.payment_frequencies import PAYMENT_FREQUENCIES
+from origin_common.constants.tenors import TENORS
