@@ -799,46 +799,46 @@ class TestTenorNumberOfMonths(TestCase):
 
 
 class TestTenorIsCallableTenor(TestCase):
-    def test_overnight_is_callable_tenor(self):
+    def test_overnight_is_not_callable_tenor(self):
         assert TENORS.OVERNIGHT.is_callable_tenor is False
 
-    def test_one_week_is_callable_tenor(self):
+    def test_one_week_is_not_callable_tenor(self):
         assert TENORS.ONE_WEEK.is_callable_tenor is False
 
-    def test_two_week_is_callable_tenor(self):
+    def test_two_week_is_not_callable_tenor(self):
         assert TENORS.TWO_WEEK.is_callable_tenor is False
 
     def test_one_month_is_callable_tenor(self):
         assert TENORS.ONE_MONTH.is_callable_tenor is True
 
-    def test_two_month_is_callable_tenor(self):
+    def test_two_month_is_not_callable_tenor(self):
         assert TENORS.TWO_MONTH.is_callable_tenor is False
 
     def test_three_month_is_callable_tenor(self):
         assert TENORS.THREE_MONTH.is_callable_tenor is True
 
-    def test_four_month_is_callable_tenor(self):
+    def test_four_month_is_not_callable_tenor(self):
         assert TENORS.FOUR_MONTH.is_callable_tenor is False
 
-    def test_five_month_is_callable_tenor(self):
+    def test_five_month_is_not_callable_tenor(self):
         assert TENORS.FIVE_MONTH.is_callable_tenor is False
 
     def test_six_month_is_callable_tenor(self):
         assert TENORS.SIX_MONTH.is_callable_tenor is True
 
-    def test_seven_month_is_callable_tenor(self):
+    def test_seven_month_is_not_callable_tenor(self):
         assert TENORS.SEVEN_MONTH.is_callable_tenor is False
 
-    def test_eight_month_is_callable_tenor(self):
+    def test_eight_month_is_not_callable_tenor(self):
         assert TENORS.EIGHT_MONTH.is_callable_tenor is False
 
     def test_nine_month_is_callable_tenor(self):
         assert TENORS.NINE_MONTH.is_callable_tenor is True
 
-    def test_ten_month_is_callable_tenor(self):
+    def test_ten_month_is_not_callable_tenor(self):
         assert TENORS.TEN_MONTH.is_callable_tenor is False
 
-    def test_eleven_month_is_callable_tenor(self):
+    def test_eleven_month_is_not_callable_tenor(self):
         assert TENORS.ELEVEN_MONTH.is_callable_tenor is False
 
     def test_one_year_is_callable_tenor(self):
