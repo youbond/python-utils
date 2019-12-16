@@ -1,6 +1,5 @@
 [tool.black]
 line-length=88
-exclude="assets"
 fast=true
 target-version=["py35", "py36", "py37", "py38"]
 [tool.isort]
@@ -13,4 +12,3 @@ line_length=88
 ensure_newline_before_comments=true
 [pytest]
 python_files = 'test_*.py'
-pep8maxlinelength = 90
