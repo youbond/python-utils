@@ -2,7 +2,12 @@ from datetime import timedelta
 from unittest import TestCase
 
 from origin_common.utils import (
-    DAYS_IN_A_MONTH, DAYS_IN_A_WEEK, DAYS_IN_A_YEAR, expand_duration_unit, join_list, string_to_timedelta,
+    DAYS_IN_A_MONTH,
+    DAYS_IN_A_WEEK,
+    DAYS_IN_A_YEAR,
+    expand_duration_unit,
+    join_list,
+    string_to_timedelta,
     timedelta_to_string,
 )
 
@@ -99,36 +104,77 @@ class TestStringToTimedelta(TestCase):
             "month": None,
             "year": None,
             "m": None,
-            "y": None
+            "y": None,
         }
         for input_string, expected in values.items():
             if expected is None:
-                self.assertRaises(ValueError, string_to_timedelta, input_string=input_string), input_string
+                self.assertRaises(
+                    ValueError, string_to_timedelta, input_string=input_string
+                ), input_string
             else:
-                assert string_to_timedelta(input_string=input_string) == expected, input_string
+                assert (
+                    string_to_timedelta(input_string=input_string) == expected
+                ), input_string
 
     def test_returns_tuple_if_string_is_range(self):
         values = {
             # input: expected
-            "1-10M": (timedelta(days=1 * DAYS_IN_A_MONTH), timedelta(days=10 * DAYS_IN_A_MONTH)),
-            "1-10": (timedelta(days=1 * DAYS_IN_A_YEAR), timedelta(days=10 * DAYS_IN_A_YEAR)),
-            "1-10Y": (timedelta(days=1 * DAYS_IN_A_YEAR), timedelta(days=10 * DAYS_IN_A_YEAR)),
-            "1-10 year": (timedelta(days=1 * DAYS_IN_A_YEAR), timedelta(days=10 * DAYS_IN_A_YEAR)),
-            "1-10year": (timedelta(days=1 * DAYS_IN_A_YEAR), timedelta(days=10 * DAYS_IN_A_YEAR)),
-            "1-10 yr": (timedelta(days=1 * DAYS_IN_A_YEAR), timedelta(days=10 * DAYS_IN_A_YEAR)),
-            "1-10yr": (timedelta(days=1 * DAYS_IN_A_YEAR), timedelta(days=10 * DAYS_IN_A_YEAR)),
-            "1 - 10years": (timedelta(days=1 * DAYS_IN_A_YEAR), timedelta(days=10 * DAYS_IN_A_YEAR)),
-            "1 - 10 years": (timedelta(days=1 * DAYS_IN_A_YEAR), timedelta(days=10 * DAYS_IN_A_YEAR)),
+            "1-10M": (
+                timedelta(days=1 * DAYS_IN_A_MONTH),
+                timedelta(days=10 * DAYS_IN_A_MONTH),
+            ),
+            "1-10": (
+                timedelta(days=1 * DAYS_IN_A_YEAR),
+                timedelta(days=10 * DAYS_IN_A_YEAR),
+            ),
+            "1-10Y": (
+                timedelta(days=1 * DAYS_IN_A_YEAR),
+                timedelta(days=10 * DAYS_IN_A_YEAR),
+            ),
+            "1-10 year": (
+                timedelta(days=1 * DAYS_IN_A_YEAR),
+                timedelta(days=10 * DAYS_IN_A_YEAR),
+            ),
+            "1-10year": (
+                timedelta(days=1 * DAYS_IN_A_YEAR),
+                timedelta(days=10 * DAYS_IN_A_YEAR),
+            ),
+            "1-10 yr": (
+                timedelta(days=1 * DAYS_IN_A_YEAR),
+                timedelta(days=10 * DAYS_IN_A_YEAR),
+            ),
+            "1-10yr": (
+                timedelta(days=1 * DAYS_IN_A_YEAR),
+                timedelta(days=10 * DAYS_IN_A_YEAR),
+            ),
+            "1 - 10years": (
+                timedelta(days=1 * DAYS_IN_A_YEAR),
+                timedelta(days=10 * DAYS_IN_A_YEAR),
+            ),
+            "1 - 10 years": (
+                timedelta(days=1 * DAYS_IN_A_YEAR),
+                timedelta(days=10 * DAYS_IN_A_YEAR),
+            ),
         }
         for input_string, expected in values.items():
-            assert string_to_timedelta(input_string=input_string) == expected, input_string
-        expected = (timedelta(days=1 * DAYS_IN_A_MONTH), timedelta(days=10 * DAYS_IN_A_YEAR))
+            assert (
+                string_to_timedelta(input_string=input_string) == expected
+            ), input_string
+        expected = (
+            timedelta(days=1 * DAYS_IN_A_MONTH),
+            timedelta(days=10 * DAYS_IN_A_YEAR),
+        )
         assert string_to_timedelta("1M - 10 Y") == expected
-        assert string_to_timedelta("  O/n    - 1Y") == (timedelta(days=1), timedelta(days=1 * DAYS_IN_A_YEAR))
+        assert string_to_timedelta("  O/n    - 1Y") == (
+            timedelta(days=1),
+            timedelta(days=1 * DAYS_IN_A_YEAR),
+        )
 
     def test_raises_error_for_invalid_ranges(self):
         self.assertRaises(ValueError, string_to_timedelta, "1Y - 10M")
-        self.assertRaises(ValueError, string_to_timedelta, "1Y -- 10Y")  # double dash is invalid
+        self.assertRaises(
+            ValueError, string_to_timedelta, "1Y -- 10Y"
+        )  # double dash is invalid
 
     def test_ignores_asterisk(self):
         assert string_to_timedelta("1Y*") == timedelta(days=1 * DAYS_IN_A_YEAR)
@@ -164,7 +210,7 @@ class TestTimedeltaToString(TestCase):
             timedelta(days=1 * DAYS_IN_A_MONTH): "1 Month",
             timedelta(days=10 * DAYS_IN_A_MONTH): "10 Months",
             timedelta(days=1 * DAYS_IN_A_YEAR): "1 Year",
-            timedelta(days=10 * DAYS_IN_A_YEAR): "10 Years"
+            timedelta(days=10 * DAYS_IN_A_YEAR): "10 Years",
         }
 
         for tenor, label in tenors_to_test.items():
@@ -195,8 +241,14 @@ class TestTimedeltaToString(TestCase):
 
     def test_values_for_quantlib(self):
         assert timedelta_to_string(timedelta(days=1), for_quantlib=True) == "1D"
-        assert timedelta_to_string(timedelta(days=1.5 * DAYS_IN_A_YEAR), for_quantlib=True) == "1Y6M"
-        assert timedelta_to_string(timedelta(days=18 * DAYS_IN_A_MONTH), for_quantlib=True) == "1Y6M"
+        timedelta_string = timedelta_to_string(
+            timedelta(days=1.5 * DAYS_IN_A_YEAR), for_quantlib=True
+        )
+        assert timedelta_string == "1Y6M"
+        timedelta_string = timedelta_to_string(
+            timedelta(days=18 * DAYS_IN_A_MONTH), for_quantlib=True
+        )
+        assert timedelta_string == "1Y6M"
 
     def test_returns_string_unchanged(self):
         assert timedelta_to_string("1 day") == "1 day"
@@ -206,4 +258,7 @@ class TestTimedeltaToString(TestCase):
 
     def test_can_round_to_n_digits(self):
         t = string_to_timedelta("10.234Y")
-        assert timedelta_to_string(t, round_ndigits=3, only_quarter_years=False) == "10.234Y"
+        timedelta_string = timedelta_to_string(
+            t, round_ndigits=3, only_quarter_years=False
+        )
+        assert timedelta_string == "10.234Y"
