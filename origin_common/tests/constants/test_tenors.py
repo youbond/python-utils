@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 from unittest import TestCase
 
@@ -993,3 +994,8 @@ class TestTenorIsCallableTenor(TestCase):
 
     def test_fifty_year_is_callable_tenor(self):
         assert TENORS.FIFTY_YEAR.is_callable_tenor is True
+
+
+class TestTenorJsonDumps(TestCase):
+    def test_dump_uses_label_instead_of_value(self):
+        assert json.dumps(TENORS) == json.dumps([t.label for t in TENORS])

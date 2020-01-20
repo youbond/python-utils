@@ -1,3 +1,4 @@
+import json
 from unittest import TestCase
 
 from origin_common.constants.base import Constant, Constants
@@ -21,6 +22,27 @@ class TestConstant(TestCase):
         const = Constant(value=123, label="Foo")
         assert const == const
         assert const == 123
+
+    def test_can_be_made_immutable(self):
+        const = Constant(value=123, label="Foo")
+        const.make_immutable()
+        with self.assertRaises(AttributeError):
+            const.value = 321
+        with self.assertRaises(AttributeError):
+            const.label = "Bar"
+        with self.assertRaises(AttributeError):
+            const.new_attribute = "Baz"
+        const.make_mutable()
+        try:
+            const.value = 321
+            const.label = "Bar"
+            const.new_attribute = "Baz"
+        except AttributeError:
+            self.fail("AttributeError raised while mutable.")
+
+    def test_json_dumps(self):
+        const = Constant(value=123, label="Foo")
+        assert json.dumps(const) == json.dumps(const.value)
 
 
 class TestConstants(TestCase):
@@ -119,3 +141,31 @@ class TestConstants(TestCase):
         dummy2 = Dummy2()
         assert len(dummy1) == 1
         assert len(dummy2) == 3
+
+    def test_can_be_made_immutable(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+            c2 = Constant(2, "two")
+            c3 = Constant(3, "three")
+
+        dummy = Dummy()
+        dummy.make_immutable()
+        with self.assertRaises(AttributeError):
+            dummy.c1.value = 321
+        with self.assertRaises(AttributeError):
+            dummy.new_attribute = Constant(4, "four")
+        dummy.make_mutable()
+        try:
+            dummy.c1.value = 321
+            dummy.new_attribute = Constant(4, "four")
+        except AttributeError:
+            self.fail("AttributeError raised while mutable.")
+
+    def test_json_dumps(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+            c2 = Constant(2, "two")
+            c3 = Constant(3, "three")
+
+        dummy = Dummy()
+        assert json.dumps(dummy) == json.dumps([c.value for c in dummy])
