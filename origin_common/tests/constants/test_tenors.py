@@ -7,6 +7,7 @@ from origin_common.constants.tenors import (
     ONE_MONTH_TIMEDELTA,
     ONE_YEAR_TIMEDELTA,
     THREE_MONTH_TIMEDELTA,
+    Tenor,
 )
 from origin_common.utils import DAYS_IN_A_MONTH, DAYS_IN_A_WEEK, DAYS_IN_A_YEAR
 
@@ -797,6 +798,10 @@ class TestTenorNumberOfMonths(TestCase):
 
     def test_fifty_year_number_of_months(self):
         assert TENORS.FIFTY_YEAR.number_of_months == 50 * 12
+
+    def test_invalid_tenor(self):
+        with self.assertRaises(ValueError):
+            Tenor(timedelta(1), "1D", "red")
 
 
 class TestTenorIsCallableTenor(TestCase):

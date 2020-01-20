@@ -24,7 +24,10 @@ class Tenor(Constant[timedelta]):
         if self.label == "O/N":
             return 1 / float(DAYS_IN_A_MONTH)  # 1 day is 1/30 months
         regex = r"([\d\.]+)(M|Y|W)"
-        number, duration_unit = re.match(regex, self.label).groups()
+        match = re.match(regex, self.label)
+        if not match:
+            raise ValueError("Invalid tenor")
+        number, duration_unit = match.groups()
         if duration_unit == "M":
             return float(number)
         elif duration_unit == "Y":
@@ -33,8 +36,6 @@ class Tenor(Constant[timedelta]):
             return (
                 float(number) * DAYS_IN_A_WEEK / DAYS_IN_A_MONTH
             )  # 1 week is 7/30 months
-        else:
-            raise Exception("Invalid tenor")
 
     @property
     def is_callable_tenor(self):
