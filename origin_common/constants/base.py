@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from json import JSONEncoder
 from typing import Any, Dict, Generator, Generic, Set, Tuple, TypeVar, Union
 
 T = TypeVar("T")
@@ -87,9 +88,10 @@ class Constants(Generic[C]):
 
     def __setattr__(self, key: str, value: Any) -> None:
         if not key.startswith("_") and hasattr(value, "_creation_counter"):
+            counter = value._creation_counter
             if hasattr(self, key):
-                original_counter = getattr(self, key)._creation_counter
-                self._ordered_fields[original_counter] = value
+                counter = getattr(self, key)._creation_counter
+            self._ordered_fields[counter] = value
         super().__setattr__(key, value)
 
     def to_django_choices(self) -> Tuple[Tuple[T, str]]:
@@ -122,3 +124,15 @@ class Constants(Generic[C]):
         if self.__label_to_object_mapping is None:
             self.__label_to_object_mapping = {attr.label: attr for attr in self}
         return self.__label_to_object_mapping
+
+
+def encode_default(self, obj):
+    if isinstance(obj, Constant):
+        return obj.value
+    if isinstance(obj, Constants):
+        return [o.value for o in obj]
+    return encode_default.default(obj)
+
+
+encode_default.default = JSONEncoder.default
+JSONEncoder.default = encode_default
