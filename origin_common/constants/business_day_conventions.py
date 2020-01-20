@@ -17,3 +17,4 @@ class BusinessDayConventions(Constants):
 
 
 BUSINESS_DAY_CONVENTIONS = BusinessDayConventions()
+BUSINESS_DAY_CONVENTIONS.make_immutable()

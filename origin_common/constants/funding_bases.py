@@ -950,5 +950,7 @@ class CDFundingBases(FundingBases):
 
 
 MTN_FUNDING_BASES = MTNFundingBases()
+MTN_FUNDING_BASES.make_immutable()
 CD_FUNDING_BASES = CDFundingBases()
+CD_FUNDING_BASES.make_immutable()
 FUNDING_BASES = MTN_FUNDING_BASES

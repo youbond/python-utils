@@ -44,6 +44,9 @@ class Tenor(Constant[timedelta]):
             or self.value == ONE_MONTH_TIMEDELTA
         )
 
+    def to_json(self):
+        return self.label
+
 
 class Tenors(Constants[Tenor]):
     OVERNIGHT = Tenor(timedelta(days=1), "O/N", "#665241")
@@ -114,3 +117,4 @@ class Tenors(Constants[Tenor]):
 
 
 TENORS = Tenors()
+TENORS.make_immutable()

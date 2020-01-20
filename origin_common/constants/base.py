@@ -5,7 +5,23 @@ from typing import Any, Dict, Generator, Generic, Set, Tuple, TypeVar, Union
 T = TypeVar("T")
 
 
-class Constant(Generic[T]):
+class ImmutableMixin:
+    _mutable = True
+
+    def make_immutable(self):
+        self._mutable = False
+
+    def make_mutable(self):
+        self._mutable = True
+
+    def __setattr__(self, key: any, value: any) -> None:
+        # allow changing private & protected variables as they are set from within
+        if not (self._mutable or key.startswith("_")):
+            raise AttributeError("Cannot change constant values.")
+        super().__setattr__(key, value)
+
+
+class Constant(Generic[T], ImmutableMixin):
     creation_counter = 0
 
     def __init__(self, value: T, label: str):
@@ -14,11 +30,6 @@ class Constant(Generic[T]):
         Constant.creation_counter += 1
         self.value = value
         self.label = label
-
-        def replace_setter(*args):
-            raise AttributeError("Cannot change constant values.")
-
-        self.__setattr__ = replace_setter
 
     def __str__(self) -> str:
         return ", ".join(
@@ -44,11 +55,14 @@ class Constant(Generic[T]):
             )
         )
 
+    def to_json(self):
+        return self.value
+
 
 C = TypeVar("C", bound=Constant)
 
 
-class Constants(Generic[C]):
+class Constants(Generic[C], ImmutableMixin):
     __instance = None
 
     def __init__(self):
@@ -57,11 +71,6 @@ class Constants(Generic[C]):
         self.__label_to_object_mapping = None
         self.__object_set = None
 
-        def replace_setter(*args):
-            raise AttributeError("Cannot change constant values.")
-
-        self.__setattr__ = replace_setter
-
     def __new__(cls, *args, **kwargs):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls, *args, **kwargs)
@@ -69,7 +78,7 @@ class Constants(Generic[C]):
                 getattr(cls, attr_name)
                 for attr_name in dir(cls)
                 if not attr_name.startswith("_")
-                   and isinstance(getattr(cls, attr_name), Constant)
+                and isinstance(getattr(cls, attr_name), Constant)
             ]
 
             cls._ordered_fields = OrderedDict(
@@ -136,13 +145,24 @@ class Constants(Generic[C]):
             self.__label_to_object_mapping = {attr.label: attr for attr in self}
         return self.__label_to_object_mapping
 
+    def make_mutable(self):
+        super().make_mutable()
+        for constant in self:
+            constant.make_mutable()
+
+    def make_immutable(self):
+        super().make_immutable()
+        for constant in self:
+            constant.make_immutable()
+
+    def to_json(self):
+        return [o.to_json() for o in self]
+
 
 def encode_default(self, obj):
-    if isinstance(obj, Constant):
-        return obj.value
-    if isinstance(obj, Constants):
-        return [o.value for o in obj]
-    return encode_default.default(obj)
+    if isinstance(obj, (Constant, Constants)):
+        return obj.to_json()
+    return encode_default.default(self, obj)
 
 
 encode_default.default = JSONEncoder.default

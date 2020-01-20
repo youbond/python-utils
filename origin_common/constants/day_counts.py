@@ -15,3 +15,4 @@ class DayCounts(Constants):
 
 
 DAY_COUNTS = DayCounts()
+DAY_COUNTS.make_immutable()

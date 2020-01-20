@@ -12,3 +12,4 @@ class Adjustments(Constants):
 
 
 ADJUSTMENTS = Adjustments()
+ADJUSTMENTS.make_immutable()

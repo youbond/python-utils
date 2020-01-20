@@ -13,3 +13,4 @@ class PaymentFrequencies(Constants):
 
 
 PAYMENT_FREQUENCIES = PaymentFrequencies()
+PAYMENT_FREQUENCIES.make_immutable()
