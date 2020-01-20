@@ -150,7 +150,10 @@ class TestEURMSBasis(BasisTestCase):
         "sorting": 30,
         "label": "EUR M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.EUR_6M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.ANNUALLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_360,
     }
 
 
@@ -252,7 +255,10 @@ class TestUSDMSBasis(BasisTestCase):
         "sorting": 70,
         "label": "USD M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.USD_3M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.QUARTERLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_360,
     }
 
 
@@ -376,7 +382,10 @@ class TestGBPMSBasis(BasisTestCase):
         "sorting": 110,
         "label": "GBP M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.GBP_6M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_365,
     }
 
 
@@ -458,7 +467,10 @@ class TestJPYMSBasis(BasisTestCase):
         "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         "label": "JPY M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.JPY_6M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_360,
     }
 
 
@@ -540,7 +552,10 @@ class TestCHFMSBasis(BasisTestCase):
         "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         "label": "CHF M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.CHF_6M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.ANNUALLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_360,
     }
 
 
@@ -622,7 +637,10 @@ class TestAUDMSBasis(BasisTestCase):
         "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         "label": "AUD M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.AUD_3M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.QUARTERLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.QUARTERLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_365,
     }
 
 
@@ -683,7 +701,10 @@ class TestSEKMSBasis(BasisTestCase):
         "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         "label": "SEK M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.SEK_3M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.QUARTERLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.ANNUALLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_360,
     }
 
 
@@ -765,7 +786,10 @@ class TestNOKMSBasis(BasisTestCase):
         "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         "label": "NOK M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.NOK_6M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.QUARTERLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.ANNUALLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_360,
     }
 
 
@@ -826,7 +850,10 @@ class TestCADMSBasis(BasisTestCase):
         "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         "label": "CAD M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.CAD_3M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.QUARTERLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_365,
     }
 
 
@@ -887,7 +914,10 @@ class TestNZDMSBasis(BasisTestCase):
         "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         "label": "NZD M/S",
         "is_callable_basis": False,
+        "floating_basis": FUNDING_BASES.NZD_3M,
+        "ms_payment_frequency": PAYMENT_FREQUENCIES.QUARTERLY,
         "display_payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        "ms_day_count": DAY_COUNTS.ACTUAL_365,
     }
 
 
