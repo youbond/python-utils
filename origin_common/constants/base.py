@@ -15,6 +15,11 @@ class Constant(Generic[T]):
         self.value = value
         self.label = label
 
+        def replace_setter(*args):
+            raise AttributeError("Cannot change constant values.")
+
+        self.__setattr__ = replace_setter
+
     def __str__(self) -> str:
         return ", ".join(
             "{}={}".format(key, value)
@@ -52,6 +57,11 @@ class Constants(Generic[C]):
         self.__label_to_object_mapping = None
         self.__object_set = None
 
+        def replace_setter(*args):
+            raise AttributeError("Cannot change constant values.")
+
+        self.__setattr__ = replace_setter
+
     def __new__(cls, *args, **kwargs):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls, *args, **kwargs)
@@ -59,7 +69,7 @@ class Constants(Generic[C]):
                 getattr(cls, attr_name)
                 for attr_name in dir(cls)
                 if not attr_name.startswith("_")
-                and isinstance(getattr(cls, attr_name), Constant)
+                   and isinstance(getattr(cls, attr_name), Constant)
             ]
 
             cls._ordered_fields = OrderedDict(
@@ -87,6 +97,7 @@ class Constants(Generic[C]):
         return len(self._values)
 
     def __setattr__(self, key: str, value: Any) -> None:
+        # this will be replaced after init to prevent changing the constants
         if not key.startswith("_") and hasattr(value, "_creation_counter"):
             counter = value._creation_counter
             if hasattr(self, key):
