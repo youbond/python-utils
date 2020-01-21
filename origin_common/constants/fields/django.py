@@ -18,14 +18,14 @@ T = TypeVar("T")
 
 
 class ConstantField(Generic[T], models.Field):
-    description: str = "A single immutable constant"
-    constants: Constants
-    base_type: type = str
-    type_mappings: Dict[type, models.Field] = {
+    description = "A single immutable constant"  # type: str
+    constants = None  # type: Constants
+    base_type = str  # type: type
+    type_mappings = {
         str: models.CharField,
         int: models.IntegerField,
         timedelta: models.DurationField,
-    }
+    }  # type: Dict[type, models.Field]
 
     def __init__(self, *args, **kwargs):
         if "choices" not in kwargs:
