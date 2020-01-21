@@ -10,4 +10,5 @@ setup(
     zip_safe=True,
     tests_require=["tox"],
     python_requires=">=3.5",
+    extras_require={"django": ["Django"]},
 )
