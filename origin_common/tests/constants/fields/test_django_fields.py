@@ -26,15 +26,15 @@ from origin_common.constants.fields.django import (
 
 
 class ConstantFieldTestBase:
-    field_cls = None
-    constants = None
-    base_type = None
-    base_model_field = None
+    field_cls = None  # type: type(ConstantField)
+    constants = None  # type: Constants
+    base_type = None  # type: type
+    base_model_field = None  # type: type(models.Field)
 
     def setUp(self) -> None:
         super().setUp()
         assert self.field_cls is not None, "Set field class or override setUp"
-        self.field = self.field_cls()
+        self.field = self.field_cls()  # type: ConstantField
 
     def test_choices(self):
         expected = self.constants.to_django_choices()
