@@ -6,6 +6,7 @@ from origin_common.constants.business_day_conventions import (
     BUSINESS_DAY_CONVENTIONS,
     BusinessDayConvention,
 )
+from origin_common.constants.currencies import CURRENCIES, Currency
 from origin_common.constants.day_counts import DAY_COUNTS, DayCount
 from origin_common.constants.payment_frequencies import (
     PAYMENT_FREQUENCIES,
@@ -26,8 +27,7 @@ class FundingBasis(Constant[str]):
         self,
         value: str,
         label: str,
-        currency: str,
-        symbol: str,
+        currency: Currency,
         payment_frequency: PaymentFrequency,
         day_count: DayCount,
         sorting: int,
@@ -37,7 +37,6 @@ class FundingBasis(Constant[str]):
     ):
         super().__init__(value, label)
         self.currency = currency
-        self.symbol = symbol
         self.payment_frequency = payment_frequency
         self.day_count = day_count
         self.sorting = sorting
@@ -64,6 +63,10 @@ class FundingBasis(Constant[str]):
     def is_govie_basis(self):
         return False
 
+    @property
+    def symbol(self):
+        return self.currency.symbol
+
 
 class FloatingFundingBasis(FundingBasis):
     def __init__(self, *args, index: int, screen_page: str, legal_label: str, **kwargs):
@@ -80,8 +83,32 @@ class FloatingFundingBasis(FundingBasis):
 
 
 class FixedFundingBasis(FundingBasis):
-    def __init__(self, *args, legal_label: str, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        currency: Currency,
+        payment_frequency: PaymentFrequency,
+        day_count: DayCount,
+        sorting: int,
+        adjustment: Adjustment = None,
+        business_day_convention: BusinessDayConvention = None,
+        pricing: bool = True,
+        legal_label: str = None,
+    ):
+        value = "FIXED_{}".format(currency.value)
+        label = "{} Fixed".format(currency.value)
+        if not legal_label:
+            legal_label = "Fixed Rate {}".format(currency.value)
+        super().__init__(
+            value,
+            label,
+            currency,
+            payment_frequency,
+            day_count,
+            sorting,
+            adjustment,
+            business_day_convention,
+            pricing,
+        )
         self.basis_type = BASIS_TYPE_FIXED
         self.legal_label = legal_label
 
@@ -127,8 +154,7 @@ class FundingBases(Constants[FundingBasis]):
     EUR_3M = FloatingFundingBasis(
         value="3M_EUR",
         label="3mEURIBOR",
-        currency="EUR",
-        symbol="€",
+        currency=CURRENCIES.EUR,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -141,8 +167,7 @@ class FundingBases(Constants[FundingBasis]):
     EUR_6M = FloatingFundingBasis(
         value="6M_EUR",
         label="6mEURIBOR",
-        currency="EUR",
-        symbol="€",
+        currency=CURRENCIES.EUR,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -153,22 +178,17 @@ class FundingBases(Constants[FundingBasis]):
         sorting=10,
     )
     EUR_FIXED = FixedFundingBasis(
-        value="FIXED_EUR",
-        label="EUR Fixed",
-        currency="EUR",
-        symbol="€",
+        currency=CURRENCIES.EUR,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
-        legal_label="Fixed Rate EUR",
         sorting=20,
     )
     EUR_MS = MSFundingBasis(
         value="MS_EUR",
         label="EUR M/S",
-        currency="EUR",
-        symbol="€",
+        currency=CURRENCIES.EUR,
         floating_basis=EUR_6M,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -183,8 +203,7 @@ class FundingBases(Constants[FundingBasis]):
     USD_3M = FloatingFundingBasis(
         value="3M_USD",
         label="3mUSD-LIBOR",
-        currency="USD",
-        symbol="$",
+        currency=CURRENCIES.USD,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -197,8 +216,7 @@ class FundingBases(Constants[FundingBasis]):
     USD_6M = FloatingFundingBasis(
         value="6M_USD",
         label="6mUSD-LIBOR",
-        currency="USD",
-        symbol="$",
+        currency=CURRENCIES.USD,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -209,22 +227,17 @@ class FundingBases(Constants[FundingBasis]):
         sorting=50,
     )
     USD_FIXED = FixedFundingBasis(
-        value="FIXED_USD",
-        label="USD Fixed",
-        currency="USD",
-        symbol="$",
+        currency=CURRENCIES.USD,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.THIRTY_360,
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
-        legal_label="Fixed Rate USD",
         sorting=60,
     )
     USD_MS = MSFundingBasis(
         value="MS_USD",
         label="USD M/S",
-        currency="USD",
-        symbol="$",
+        currency=CURRENCIES.USD,
         floating_basis=USD_3M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
@@ -238,8 +251,7 @@ class FundingBases(Constants[FundingBasis]):
 
     GBP_SONIA = FloatingFundingBasis(
         value="SONIA",
-        currency="GBP",
-        symbol="£",
+        currency=CURRENCIES.GBP,
         index=0,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -253,8 +265,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     GBP_3M = FloatingFundingBasis(
         value="3M_GBP",
-        currency="GBP",
-        symbol="£",
+        currency=CURRENCIES.GBP,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -267,8 +278,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     GBP_6M = FloatingFundingBasis(
         value="6M_GBP",
-        currency="GBP",
-        symbol="£",
+        currency=CURRENCIES.GBP,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -280,21 +290,16 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="LIBOR01",
     )
     GBP_FIXED = FixedFundingBasis(
-        value="FIXED_GBP",
-        currency="GBP",
-        symbol="£",
+        currency=CURRENCIES.GBP,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=100,
-        label="GBP Fixed",
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
-        legal_label="Fixed Rate GBP",
     )
     GBP_MS = MSFundingBasis(
         value="MS_GBP",
-        currency="GBP",
-        symbol="£",
+        currency=CURRENCIES.GBP,
         floating_basis=GBP_6M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -308,8 +313,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     JPY_3M = FloatingFundingBasis(
         value="3M_JPY",
-        currency="JPY",
-        symbol="¥",
+        currency=CURRENCIES.JPY,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -322,8 +326,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     JPY_6M = FloatingFundingBasis(
         value="6M_JPY",
-        currency="JPY",
-        symbol="¥",
+        currency=CURRENCIES.JPY,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -335,21 +338,16 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="LIBOR01",
     )
     JPY_FIXED = FixedFundingBasis(
-        value="FIXED_JPY",
-        currency="JPY",
-        symbol="¥",
+        currency=CURRENCIES.JPY,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.THIRTY_360,
         sorting=140,
-        label="JPY Fixed",
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        legal_label="Fixed Rate JPY",
     )
     JPY_MS = MSFundingBasis(
         value="MS_JPY",
-        currency="JPY",
-        symbol="JPY",
+        currency=CURRENCIES.JPY,
         floating_basis=JPY_6M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -363,8 +361,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     CHF_3M = FloatingFundingBasis(
         value="3M_CHF",
-        currency="CHF",
-        symbol="CHF",
+        currency=CURRENCIES.CHF,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -377,8 +374,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     CHF_6M = FloatingFundingBasis(
         value="6M_CHF",
-        currency="CHF",
-        symbol="CHF",
+        currency=CURRENCIES.CHF,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -390,21 +386,16 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="LIBOR01",
     )
     CHF_FIXED = FixedFundingBasis(
-        value="FIXED_CHF",
-        currency="CHF",
-        symbol="CHF",
+        currency=CURRENCIES.CHF,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.THIRTY_360,
         sorting=180,
-        label="CHF Fixed",
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
-        legal_label="Fixed Rate CHF",
     )
     CHF_MS = MSFundingBasis(
         value="MS_CHF",
-        currency="CHF",
-        symbol="CHF",
+        currency=CURRENCIES.CHF,
         floating_basis=CHF_6M,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -418,8 +409,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     AUD_3M = FloatingFundingBasis(
         value="3M_AUD",
-        currency="AUD",
-        symbol="AUD",
+        currency=CURRENCIES.AUD,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -432,8 +422,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     AUD_6M = FloatingFundingBasis(
         value="6M_AUD",
-        currency="AUD",
-        symbol="AUD",
+        currency=CURRENCIES.AUD,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -445,21 +434,16 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="BBSW",
     )
     AUD_FIXED = FixedFundingBasis(
-        value="FIXED_AUD",
-        currency="AUD",
-        symbol="AUD",
+        currency=CURRENCIES.AUD,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=220,
-        label="AUD Fixed",
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        legal_label="Fixed Rate AUD",
     )
     AUD_MS = MSFundingBasis(
         value="MS_AUD",
-        currency="AUD",
-        symbol="AUD",
+        currency=CURRENCIES.AUD,
         floating_basis=AUD_3M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
@@ -473,8 +457,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     SEK_3M = FloatingFundingBasis(
         value="3M_SEK",
-        currency="SEK",
-        symbol="SEK",
+        currency=CURRENCIES.SEK,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -486,21 +469,17 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="SIDE",
     )
     SEK_FIXED = FixedFundingBasis(
-        value="FIXED_SEK",
-        currency="SEK",
-        symbol="SEK",
+        currency=CURRENCIES.SEK,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.THIRTY_360,
         sorting=250,
-        label="SEK Fixed",
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
         legal_label="SEK Fixed Rate",
     )
     SEK_MS = MSFundingBasis(
         value="MS_SEK",
-        currency="SEK",
-        symbol="SEK",
+        currency=CURRENCIES.SEK,
         floating_basis=SEK_3M,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
@@ -514,8 +493,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     NOK_3M = FloatingFundingBasis(
         value="3M_NOK",
-        currency="NOK",
-        symbol="NOK",
+        currency=CURRENCIES.NOK,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -528,8 +506,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     NOK_6M = FloatingFundingBasis(
         value="6M_NOK",
-        currency="NOK",
-        symbol="NOK",
+        currency=CURRENCIES.NOK,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_360,
@@ -541,21 +518,17 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="NIBRO",
     )
     NOK_FIXED = FixedFundingBasis(
-        value="FIXED_NOK",
-        currency="NOK",
-        symbol="NOK",
+        currency=CURRENCIES.NOK,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=290,
-        label="NOK Fixed",
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
         legal_label="NOK Fixed Rate",
     )
     NOK_MS = MSFundingBasis(
         value="MS_NOK",
-        currency="NOK",
-        symbol="NOK",
+        currency=CURRENCIES.NOK,
         floating_basis=NOK_6M,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
@@ -569,8 +542,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     CAD_3M = FloatingFundingBasis(
         value="3M_CAD",
-        currency="CAD",
-        symbol="CAD",
+        currency=CURRENCIES.CAD,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -582,21 +554,17 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="CDOR",
     )
     CAD_FIXED = FixedFundingBasis(
-        value="FIXED_CAD",
-        currency="CAD",
-        symbol="CAD",
+        currency=CURRENCIES.CAD,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=320,
-        label="CAD Fixed",
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="CAD Fixed Rate",
     )
     CAD_MS = MSFundingBasis(
         value="MS_CAD",
-        currency="CAD",
-        symbol="CAD",
+        currency=CURRENCIES.CAD,
         floating_basis=CAD_3M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
@@ -610,8 +578,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     NZD_3M = FloatingFundingBasis(
         value="3M_NZD",
-        currency="NZD",
-        symbol="NZD",
+        currency=CURRENCIES.NZD,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -623,21 +590,16 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="",
     )
     NZD_FIXED = FixedFundingBasis(
-        value="FIXED_NZD",
-        currency="NZD",
-        symbol="NZD",
+        currency=CURRENCIES.NZD,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=350,
-        label="NZD Fixed",
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        legal_label="Fixed Rate NZD",
     )
     NZD_MS = MSFundingBasis(
         value="MS_NZD",
-        currency="NZD",
-        symbol="NZD",
+        currency=CURRENCIES.NZD,
         floating_basis=NZD_3M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         ms_payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
@@ -651,8 +613,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     HKD_3M = FloatingFundingBasis(
         value="3M_HKD",
-        currency="HKD",
-        symbol="HKD",
+        currency=CURRENCIES.HKD,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -665,8 +626,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     HKD_6M = FloatingFundingBasis(
         value="6M_HKD",
-        currency="HKD",
-        symbol="HKD",
+        currency=CURRENCIES.HKD,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -678,21 +638,16 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="HKABHIBOR",
     )
     HKD_FIXED = FixedFundingBasis(
-        value="FIXED_HKD",
-        currency="HKD",
-        symbol="HKD",
+        currency=CURRENCIES.HKD,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=370,
-        label="HKD Fixed",
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        legal_label="Fixed Rate HKD",
     )
     SGD_3M = FloatingFundingBasis(
         value="3M_SGD",
-        currency="SGD",
-        symbol="SGD",
+        currency=CURRENCIES.SGD,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -705,8 +660,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     SGD_6M = FloatingFundingBasis(
         value="6M_SGD",
-        currency="SGD",
-        symbol="SGD",
+        currency=CURRENCIES.SGD,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -718,57 +672,40 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="ABSIRFIX01",
     )
     SGD_FIXED = FixedFundingBasis(
-        value="FIXED_SGD",
-        currency="SGD",
-        symbol="SGD",
+        currency=CURRENCIES.SGD,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=375,
-        label="SGD Fixed",
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        legal_label="Fixed Rate SGD",
     )
     CNH_FIXED = FixedFundingBasis(
-        value="FIXED_CNH",
-        currency="CNH",
-        symbol="CNH",
+        currency=CURRENCIES.CNH,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=380,
-        label="CNH Fixed",
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        legal_label="Fixed Rate CNH",
     )
     CNY_FIXED = FixedFundingBasis(
-        value="FIXED_CNY",
-        currency="CNY",
-        symbol="CNY",
+        currency=CURRENCIES.CNY,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=381,
-        label="CNY Fixed",
         pricing=False,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        legal_label="Fixed Rate CNY",
     )
     KRW_FIXED = FixedFundingBasis(
-        value="FIXED_KRW",
-        currency="KRW",
-        symbol="₩",
+        currency=CURRENCIES.KRW,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=382,
-        label="KRW Fixed",
         pricing=False,
-        legal_label="Fixed Rate KRW",
     )
     CZK_3M = FloatingFundingBasis(
         value="3M_CZK",
-        currency="CZK",
-        symbol="CZK",
+        currency=CURRENCIES.CZK,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -780,20 +717,15 @@ class FundingBases(Constants[FundingBasis]):
     )
     CZK_3M.is_callable_basis = False  # weird exception
     CZK_FIXED = FixedFundingBasis(
-        value="FIXED_CZK",
-        currency="CZK",
-        symbol="CZK",
+        currency=CURRENCIES.CZK,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=384,
-        label="CZK Fixed",
         pricing=False,
-        legal_label="Fixed Rate CZK",
     )
     ZAR_3M = FloatingFundingBasis(
         value="3M_ZAR",
-        currency="ZAR",
-        symbol="ZAR",
+        currency=CURRENCIES.ZAR,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -805,8 +737,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     ZAR_6M = FloatingFundingBasis(
         value="6M_ZAR",
-        currency="ZAR",
-        symbol="ZAR",
+        currency=CURRENCIES.ZAR,
         index=6,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
@@ -817,20 +748,15 @@ class FundingBases(Constants[FundingBasis]):
         screen_page="SAFEY",
     )
     ZAR_FIXED = FixedFundingBasis(
-        value="FIXED_ZAR",
-        currency="ZAR",
-        symbol="ZAR",
+        currency=CURRENCIES.ZAR,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=387,
-        label="ZAR Fixed",
         pricing=False,
-        legal_label="Fixed Rate ZAR",
     )
     BTP = GovieFundingBasis(
         value="BTP",
-        currency="EUR",
-        symbol="€",
+        currency=CURRENCIES.EUR,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=390,
@@ -843,8 +769,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     OAT = GovieFundingBasis(
         value="OAT",
-        currency="EUR",
-        symbol="€",
+        currency=CURRENCIES.EUR,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=400,
@@ -857,8 +782,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     OLO = GovieFundingBasis(
         value="OLO",
-        currency="EUR",
-        symbol="€",
+        currency=CURRENCIES.EUR,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=410,
@@ -871,8 +795,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     RAGB = GovieFundingBasis(
         value="RAGB",
-        currency="EUR",
-        symbol="€",
+        currency=CURRENCIES.EUR,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=420,
@@ -885,8 +808,7 @@ class FundingBases(Constants[FundingBasis]):
     )
     SPGB = GovieFundingBasis(
         value="SPGB",
-        currency="EUR",
-        symbol="€",
+        currency=CURRENCIES.EUR,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=430,
@@ -924,40 +846,28 @@ class CDFundingBases(FundingBases):
     def __init__(self):
         super().__init__()
         self.USD_FIXED = FixedFundingBasis(
-            value="FIXED_USD",
-            label="USD Fixed",
-            currency="USD",
-            symbol="$",
+            currency=CURRENCIES.USD,
             payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
             day_count=DAY_COUNTS.ACTUAL_360,
             adjustment=ADJUSTMENTS.ADJUSTED,
             business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-            legal_label="Fixed Rate USD",
             sorting=60,
         )
         self.EUR_FIXED = FixedFundingBasis(
-            value="FIXED_EUR",
-            label="EUR Fixed",
-            currency="EUR",
-            symbol="€",
+            currency=CURRENCIES.EUR,
             payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
             day_count=DAY_COUNTS.ACTUAL_360,
             adjustment=ADJUSTMENTS.ADJUSTED,
             business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-            legal_label="Fixed Rate EUR",
             sorting=20,
         )
         self.GBP_FIXED = FixedFundingBasis(
-            value="FIXED_GBP",
-            currency="GBP",
-            symbol="£",
+            currency=CURRENCIES.GBP,
             payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
             day_count=DAY_COUNTS.ACTUAL_365_NL,
             sorting=100,
-            label="GBP Fixed",
             adjustment=ADJUSTMENTS.ADJUSTED,
             business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-            legal_label="Fixed Rate GBP",
         )
 
 
