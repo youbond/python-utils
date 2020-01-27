@@ -14,7 +14,7 @@ from origin_common.constants import (
     TENORS,
 )
 from origin_common.constants.base import Constants
-from origin_common.constants.fields.model_fields import (
+from origin_common.constants.django.model_fields import (
     AdjustmentField,
     BusinessDayConventionField,
     ConstantField,

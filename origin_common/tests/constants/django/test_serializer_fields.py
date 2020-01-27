@@ -24,7 +24,7 @@ class TestChoiceField(TestCase):
 
         serializer = Serializer(data={"foo": 1})
         assert serializer.is_valid()
-        assert serializer.validated_data["foo"] is dummy_choices.c1
+        assert serializer.validated_data["foo"] == dummy_choices.c1
 
     def test_returns_constant_in_representation(self):
         dummy_choices = DummyChoices()
@@ -33,7 +33,7 @@ class TestChoiceField(TestCase):
             foo = ChoiceField(choices=dummy_choices)
 
         serializer = Serializer(instance={"foo": 1})
-        assert serializer.data["foo"] is dummy_choices.c1
+        assert serializer.data["foo"] == dummy_choices.c1
 
     def test_validation_still_works_normally_for_non_constant_choices(self):
         class Serializer(serializers.Serializer):
@@ -51,7 +51,7 @@ class TestChoiceField(TestCase):
 
         serializer = Serializer(data={"foo": "1"})
         assert serializer.is_valid()
-        assert serializer.validated_data["foo"] is dummy_choices.c1
+        assert serializer.validated_data["foo"] == dummy_choices.c1
 
     def test_instance_can_be_an_actual_constant(self):
         dummy_choices = DummyChoices()
@@ -60,7 +60,7 @@ class TestChoiceField(TestCase):
             foo = ChoiceField(choices=dummy_choices)
 
         serializer = Serializer(instance={"foo": dummy_choices.c1})
-        assert serializer.data["foo"] is dummy_choices.c1
+        assert serializer.data["foo"] == dummy_choices.c1
 
 
 class TestMultipleChoiceField(TestCase):
