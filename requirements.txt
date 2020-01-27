@@ -5,3 +5,4 @@ pytest-cov==2.8.1
 
 # optional dependencies
 Django==3.0.2
+djangorestframework==3.11.0
