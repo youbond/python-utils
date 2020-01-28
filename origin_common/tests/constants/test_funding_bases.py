@@ -457,7 +457,7 @@ class TestJPYMSBasis(BasisTestCase):
     attributes = {
         "value": "MS_JPY",
         "currency": "JPY",
-        "symbol": "JPY",
+        "symbol": "¥",
         "basis_type": "ms",
         "index": 0,
         "payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,

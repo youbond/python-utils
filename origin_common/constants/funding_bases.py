@@ -120,14 +120,31 @@ class FixedFundingBasis(FundingBasis):
 class MSFundingBasis(FundingBasis):
     def __init__(
         self,
-        *args,
+        currency: Currency,
+        payment_frequency: PaymentFrequency,
+        day_count: DayCount,
+        sorting: int,
         floating_basis: FloatingFundingBasis,
         ms_payment_frequency: PaymentFrequency,
         display_payment_frequency: PaymentFrequency,
         ms_day_count: DayCount,
-        **kwargs
+        adjustment: Adjustment = None,
+        business_day_convention: BusinessDayConvention = None,
+        pricing: bool = True,
     ):
-        super().__init__(*args, **kwargs)
+        value = "MS_{}".format(currency.value)
+        label = "{} M/S".format(currency.value)
+        super().__init__(
+            value,
+            label,
+            currency,
+            payment_frequency,
+            day_count,
+            sorting,
+            adjustment,
+            business_day_convention,
+            pricing,
+        )
         self.basis_type = BASIS_TYPE_MS
         self.floating_basis = floating_basis
         self.display_payment_frequency = display_payment_frequency
@@ -186,8 +203,6 @@ class FundingBases(Constants[FundingBasis]):
         sorting=20,
     )
     EUR_MS = MSFundingBasis(
-        value="MS_EUR",
-        label="EUR M/S",
         currency=CURRENCIES.EUR,
         floating_basis=EUR_6M,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
@@ -235,8 +250,6 @@ class FundingBases(Constants[FundingBasis]):
         sorting=60,
     )
     USD_MS = MSFundingBasis(
-        value="MS_USD",
-        label="USD M/S",
         currency=CURRENCIES.USD,
         floating_basis=USD_3M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -298,7 +311,6 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
     )
     GBP_MS = MSFundingBasis(
-        value="MS_GBP",
         currency=CURRENCIES.GBP,
         floating_basis=GBP_6M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -309,7 +321,6 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         sorting=110,
-        label="GBP M/S",
     )
     JPY_3M = FloatingFundingBasis(
         value="3M_JPY",
@@ -346,7 +357,6 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
     )
     JPY_MS = MSFundingBasis(
-        value="MS_JPY",
         currency=CURRENCIES.JPY,
         floating_basis=JPY_6M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -357,7 +367,6 @@ class FundingBases(Constants[FundingBasis]):
         sorting=150,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        label="JPY M/S",
     )
     CHF_3M = FloatingFundingBasis(
         value="3M_CHF",
@@ -394,7 +403,6 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
     )
     CHF_MS = MSFundingBasis(
-        value="MS_CHF",
         currency=CURRENCIES.CHF,
         floating_basis=CHF_6M,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
@@ -405,7 +413,6 @@ class FundingBases(Constants[FundingBasis]):
         sorting=190,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        label="CHF M/S",
     )
     AUD_3M = FloatingFundingBasis(
         value="3M_AUD",
@@ -442,7 +449,6 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
     )
     AUD_MS = MSFundingBasis(
-        value="MS_AUD",
         currency=CURRENCIES.AUD,
         floating_basis=AUD_3M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -453,7 +459,6 @@ class FundingBases(Constants[FundingBasis]):
         sorting=230,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        label="AUD M/S",
     )
     SEK_3M = FloatingFundingBasis(
         value="3M_SEK",
@@ -478,7 +483,6 @@ class FundingBases(Constants[FundingBasis]):
         legal_label="SEK Fixed Rate",
     )
     SEK_MS = MSFundingBasis(
-        value="MS_SEK",
         currency=CURRENCIES.SEK,
         floating_basis=SEK_3M,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
@@ -489,7 +493,6 @@ class FundingBases(Constants[FundingBasis]):
         sorting=260,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        label="SEK M/S",
     )
     NOK_3M = FloatingFundingBasis(
         value="3M_NOK",
@@ -527,7 +530,6 @@ class FundingBases(Constants[FundingBasis]):
         legal_label="NOK Fixed Rate",
     )
     NOK_MS = MSFundingBasis(
-        value="MS_NOK",
         currency=CURRENCIES.NOK,
         floating_basis=NOK_6M,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
@@ -538,7 +540,6 @@ class FundingBases(Constants[FundingBasis]):
         sorting=300,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        label="NOK M/S",
     )
     CAD_3M = FloatingFundingBasis(
         value="3M_CAD",
@@ -563,7 +564,6 @@ class FundingBases(Constants[FundingBasis]):
         legal_label="CAD Fixed Rate",
     )
     CAD_MS = MSFundingBasis(
-        value="MS_CAD",
         currency=CURRENCIES.CAD,
         floating_basis=CAD_3M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -574,7 +574,6 @@ class FundingBases(Constants[FundingBasis]):
         sorting=330,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        label="CAD M/S",
     )
     NZD_3M = FloatingFundingBasis(
         value="3M_NZD",
@@ -598,7 +597,6 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
     )
     NZD_MS = MSFundingBasis(
-        value="MS_NZD",
         currency=CURRENCIES.NZD,
         floating_basis=NZD_3M,
         payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
@@ -609,7 +607,6 @@ class FundingBases(Constants[FundingBasis]):
         sorting=360,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
-        label="NZD M/S",
     )
     HKD_3M = FloatingFundingBasis(
         value="3M_HKD",
