@@ -62,6 +62,28 @@ class TestChoiceField(TestCase):
         serializer = Serializer(instance={"foo": dummy_choices.c1})
         assert serializer.data["foo"] == dummy_choices.c1
 
+    def test_choices_can_be_filtered(self):
+        dummy_choices = DummyChoices()
+
+        class Serializer(serializers.Serializer):
+            foo = ChoiceField(
+                choices=dummy_choices, filter_by=lambda c: c != dummy_choices.c3
+            )
+
+        serializer = Serializer(instance={"foo": 1})
+        assert serializer.data["foo"] == dummy_choices.c1
+
+        serializer = Serializer(data={"foo": 1})
+        assert serializer.is_valid()
+        assert serializer.data["foo"] == dummy_choices.c1
+
+    def test_filter_cannot_be_applied_to_non_constant_choices(self):
+        dummy_choices = DummyChoices()
+
+        message = "`filter_by` cannot be applied on non constant choices."
+        with self.assertRaises(TypeError, msg=message):
+            ChoiceField(choices={1: "One"}, filter_by=lambda c: c != dummy_choices.c3)
+
 
 class TestMultipleChoiceField(TestCase):
     def test_returns_constant_during_validation(self):
@@ -109,3 +131,27 @@ class TestMultipleChoiceField(TestCase):
 
         serializer = Serializer(instance={"foo": [dummy_choices.c1]})
         assert serializer.data["foo"] == {dummy_choices.c1}
+
+    def test_choices_can_be_filtered(self):
+        dummy_choices = DummyChoices()
+
+        class Serializer(serializers.Serializer):
+            foo = MultipleChoiceField(
+                choices=dummy_choices, filter_by=lambda c: c != dummy_choices.c3
+            )
+
+        serializer = Serializer(instance={"foo": [1]})
+        assert serializer.data["foo"] == {dummy_choices.c1}
+
+        serializer = Serializer(data={"foo": [1]})
+        assert serializer.is_valid()
+        assert serializer.data["foo"] == {dummy_choices.c1}
+
+    def test_filter_cannot_be_applied_to_non_constant_choices(self):
+        dummy_choices = DummyChoices()
+
+        message = "`filter_by` cannot be applied on non constant choices."
+        with self.assertRaises(TypeError, msg=message):
+            MultipleChoiceField(
+                choices={1: "One"}, filter_by=lambda c: c != dummy_choices.c3
+            )
