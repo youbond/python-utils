@@ -40,7 +40,9 @@ class ConstantDescriptor:
     def __init__(self, field: "ConstantField"):
         self.field = field
 
-    def __get__(self, instance: models.Model = None, cls=None) -> Constant:
+    def __get__(
+        self, instance: models.Model = None, cls=None
+    ) -> Union[Constant, "ConstantDescriptor"]:
         if instance is None:
             return self
         return instance.__dict__[self.field.name]
@@ -93,6 +95,10 @@ class ConstantField(Generic[T], models.Field):
         if isinstance(value, Constant):
             return value.value
         return value
+
+    def contribute_to_class(self, cls, name, private_only=False):
+        super().contribute_to_class(cls, name, private_only)
+        setattr(cls, self.name, self.descriptor_class(self))
 
     def _get_flatchoices(self):
         flatchoices = super()._get_flatchoices()
