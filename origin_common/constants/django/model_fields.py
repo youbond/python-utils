@@ -96,11 +96,9 @@ class ConstantField(Generic[T], models.Field):
 
     def _get_flatchoices(self):
         flatchoices = super()._get_flatchoices()
-        flatchoices.extend(
-            (constant, constant.label)
-            for constant in self.constants
-        )
+        flatchoices.extend((constant, constant.label) for constant in self.constants)
         return flatchoices
+
     flatchoices = property(_get_flatchoices)
 
 
