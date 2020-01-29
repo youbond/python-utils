@@ -16,7 +16,7 @@ class TestConstant(TestCase):
 
     def test_representation(self):
         const = Constant(value=123, label="Foo")
-        assert repr(const) == "<Constant: {} at {}>".format(const, hex(id(const)))
+        assert repr(const) == f"<Constant: {const} at {hex(id(const))}>"
 
     def test_equality(self):
         const = Constant(value=123, label="Foo")

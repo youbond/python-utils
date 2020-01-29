@@ -12,20 +12,27 @@ from origin_common.constants import (
     PAYMENT_FREQUENCIES,
     TENORS,
 )
+from origin_common.constants.adjustments import Adjustment
 from origin_common.constants.base import Constant, Constants
+from origin_common.constants.business_day_conventions import BusinessDayConvention
+from origin_common.constants.day_counts import DayCount
+from origin_common.constants.funding_bases import FundingBasis
+from origin_common.constants.payment_frequencies import PaymentFrequency
+from origin_common.constants.tenors import Tenor
 
 T = TypeVar("T")
 
 
 class ConstantField(Generic[T], models.Field):
-    description = "A single immutable constant"  # type: str
-    constants = None  # type: Constants
-    base_type = str  # type: type
-    type_mappings = {
+    attr_class: type(Constant) = None
+    base_type: type = str
+    constants: Constants = None
+    description: str = "A single immutable constant"
+    type_mappings: Dict[type, models.Field] = {
         str: models.CharField,
         int: models.IntegerField,
         timedelta: models.DurationField,
-    }  # type: Dict[type, models.Field]
+    }
 
     def __init__(self, *args, **kwargs):
         if "choices" not in kwargs:
@@ -50,9 +57,7 @@ class ConstantField(Generic[T], models.Field):
         try:
             constant = self.constants[value]
         except KeyError:
-            raise ValidationError(
-                "Invalid input: '{}' is not a valid constant.".format(value)
-            )
+            raise ValidationError(f"Invalid input: '{value}' is not a valid constant.")
         else:
             constant.make_immutable()
             return constant
@@ -64,26 +69,32 @@ class ConstantField(Generic[T], models.Field):
 
 
 class AdjustmentField(ConstantField[str]):
+    attr_class = Adjustment
     constants = ADJUSTMENTS
 
 
 class BusinessDayConventionField(ConstantField[str]):
+    attr_class = BusinessDayConvention
     constants = BUSINESS_DAY_CONVENTIONS
 
 
 class DayCountField(ConstantField[str]):
+    attr_class = DayCount
     constants = DAY_COUNTS
 
 
 class FundingBasisField(ConstantField[str]):
+    attr_class = FundingBasis
     constants = FUNDING_BASES
 
 
 class PaymentFrequencyField(ConstantField[int]):
+    attr_class = PaymentFrequency
     constants = PAYMENT_FREQUENCIES
     base_type = int
 
 
 class TenorField(ConstantField[timedelta]):
+    attr_class = Tenor
     constants = TENORS
     base_type = timedelta

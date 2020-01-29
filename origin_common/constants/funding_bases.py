@@ -98,7 +98,7 @@ class MSFundingBasis(FundingBasis):
         ms_payment_frequency: PaymentFrequency,
         display_payment_frequency: PaymentFrequency,
         ms_day_count: DayCount,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.basis_type = BASIS_TYPE_MS

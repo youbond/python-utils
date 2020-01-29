@@ -26,15 +26,15 @@ from origin_common.constants.django.model_fields import (
 
 
 class ConstantFieldTestBase:
-    field_cls = None  # type: type(ConstantField)
-    constants = None  # type: Constants
-    base_type = None  # type: type
-    base_model_field = None  # type: type(models.Field)
+    field_cls: type(ConstantField) = None
+    constants: Constants = None
+    base_type: type = None
+    base_model_field: type(models.Field) = None
 
     def setUp(self) -> None:
         super().setUp()
         assert self.field_cls is not None, "Set field class or override setUp"
-        self.field = self.field_cls()  # type: ConstantField
+        self.field: ConstantField = self.field_cls()
 
     def test_choices(self):
         expected = self.constants.to_django_choices()
@@ -61,7 +61,7 @@ class ConstantFieldTestBase:
     def test_to_python_value_when_value_is_invalid(self):
         constant = choice(list(self.constants))
         value = constant.label + "foo"
-        msg = "Invalid input: '{}' is not a valid constant.".format(value)
+        msg = f"Invalid input: '{value}' is not a valid constant."
         with self.assertRaises(ValidationError, msg=msg):
             self.field.to_python(value)
 

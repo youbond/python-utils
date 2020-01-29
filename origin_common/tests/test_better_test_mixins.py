@@ -31,23 +31,19 @@ class TestSerializerTestMixin(TestCase):
 
         dummy_test_case1 = DummyTestCase1()
         dummy_test_case1.setUp()
-        msg = "'{}' does not have any fields to test.".format(None)
+        msg = f"'{None}' does not have any fields to test."
         with self.assertRaises(AssertionError, msg=msg):
             dummy_test_case1.test_all_fields_are_tested()
 
         dummy_test_case2 = DummyTestCase2()
         dummy_test_case2.setUp()
-        msg = "'{}' does not have any fields to test.".format(
-            dummy_test_case2.serializer
-        )
+        msg = f"'{dummy_test_case2.serializer}' does not have any fields to test."
         with self.assertRaises(AssertionError, msg=msg):
             dummy_test_case2.test_all_fields_are_tested()
 
         dummy_test_case3 = DummyTestCase3()
         dummy_test_case3.setUp()
-        msg = "'{}' does not have any fields to test.".format(
-            dummy_test_case3.serializer
-        )
+        msg = f"'{dummy_test_case3.serializer}' does not have any fields to test."
         with self.assertRaises(AssertionError, msg=msg):
             dummy_test_case3.test_all_fields_are_tested()
 

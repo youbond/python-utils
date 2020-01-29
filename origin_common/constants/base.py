@@ -33,15 +33,13 @@ class Constant(Generic[T], ImmutableMixin):
 
     def __str__(self) -> str:
         return ", ".join(
-            "{}={}".format(key, value)
+            f"{key}={value}"
             for key, value in self.__dict__.items()
             if not key.startswith("_")
         )
 
     def __repr__(self):
-        return "<{}: {} at {}>".format(
-            self.__class__.__name__, str(self), hex(id(self))
-        )
+        return f"<{self.__class__.__name__}: {self} at {hex(id(self))}>"
 
     def __eq__(self, other):
         if type(self) == type(other):
