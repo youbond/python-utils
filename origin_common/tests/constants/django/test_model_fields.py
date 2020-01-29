@@ -2,6 +2,8 @@ from datetime import timedelta
 from random import choice
 from unittest import TestCase
 
+import django
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -24,6 +26,10 @@ from origin_common.constants.django.model_fields import (
     TenorField,
 )
 
+# needed to create models
+settings.configure()
+django.setup()
+
 
 class ConstantFieldTestBase:
     field_cls: type(ConstantField) = None
@@ -31,9 +37,21 @@ class ConstantFieldTestBase:
     base_type: type = None
     base_model_field: type(models.Field) = None
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        assert cls.field_cls is not None, "Set field class"
+
+        class TestModel(models.Model):
+            foo = cls.field_cls()
+
+            class Meta:
+                app_label = "test"
+
+        cls.TestModel = TestModel
+
     def setUp(self) -> None:
         super().setUp()
-        assert self.field_cls is not None, "Set field class or override setUp"
         self.field: ConstantField = self.field_cls()
 
     def test_choices(self):
@@ -85,6 +103,28 @@ class ConstantFieldTestBase:
         self.field.choices = choices
         name, path, args, kwargs = self.field.deconstruct()
         assert kwargs["choices"] == list(choices)
+
+    def test_get_foo_display_works_with_value(self):
+        constant = choice(list(self.constants))
+        instance = self.TestModel(foo=constant.value)
+        assert instance.get_foo_display() == constant.label
+
+    def test_get_foo_display_works_with_actual_constant(self):
+        constant = choice(list(self.constants))
+        instance = self.TestModel(foo=constant)
+        assert instance.get_foo_display() == constant.label
+
+    def test_attributes(self):
+        constant = choice(list(self.constants))
+        instance = self.TestModel(foo=constant.value)
+        assert isinstance(instance.foo, self.field_cls.attr_class)
+        assert isinstance(self.TestModel.foo, self.field_cls.descriptor_class)
+
+    def test_blank_and_nullable_values(self):
+        instance = self.TestModel(foo="")
+        assert instance.foo == ""
+        instance = self.TestModel(foo=None)
+        assert instance.foo is None
 
 
 class TestAdjustmentField(ConstantFieldTestBase, TestCase):

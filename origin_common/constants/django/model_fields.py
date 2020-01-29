@@ -23,10 +23,37 @@ from origin_common.constants.tenors import Tenor
 T = TypeVar("T")
 
 
+class ConstantDescriptor:
+    """
+    The descriptor for the constant attribute on the model instance.
+    Returns a Constant when accessed so you can do stuff like::
+
+        >>> instance.constant.label
+
+    Assigns a phone number object on assignment so you can do::
+
+        >>> instance.constant = Constant(...)
+    or
+        >>> instance.constant = 'foobar'
+    """
+
+    def __init__(self, field: "ConstantField"):
+        self.field = field
+
+    def __get__(self, instance: models.Model = None, cls=None) -> Constant:
+        if instance is None:
+            return self
+        return instance.__dict__[self.field.name]
+
+    def __set__(self, instance: models.Model, value: Union[Constant, T, None]):
+        instance.__dict__[self.field.name] = self.field.to_python(value)
+
+
 class ConstantField(Generic[T], models.Field):
     attr_class: type(Constant) = None
     base_type: type = str
     constants: Constants = None
+    descriptor_class = ConstantDescriptor
     description: str = "A single immutable constant"
     type_mappings: Dict[type, models.Field] = {
         str: models.CharField,
@@ -51,12 +78,12 @@ class ConstantField(Generic[T], models.Field):
         return self.type_mappings[self.base_type].__name__
 
     def to_python(self, value: Union[None, T]) -> Union[Constant, None]:
-        if value is None:
-            # for nullable values
-            return None
         try:
             constant = self.constants[value]
         except KeyError:
+            if value in {None, ""}:
+                # for nullable/blank values
+                return value
             raise ValidationError(f"Invalid input: '{value}' is not a valid constant.")
         else:
             constant.make_immutable()
@@ -66,6 +93,15 @@ class ConstantField(Generic[T], models.Field):
         if isinstance(value, Constant):
             return value.value
         return value
+
+    def _get_flatchoices(self):
+        flatchoices = super()._get_flatchoices()
+        flatchoices.extend(
+            (constant, constant.label)
+            for constant in self.constants
+        )
+        return flatchoices
+    flatchoices = property(_get_flatchoices)
 
 
 class AdjustmentField(ConstantField[str]):
