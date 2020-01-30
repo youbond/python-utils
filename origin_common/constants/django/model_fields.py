@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Dict, Generic, List, Tuple, TypeVar, Union
+from typing import Any, Dict, List, Tuple, Union
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -19,8 +19,6 @@ from origin_common.constants.day_counts import DayCount
 from origin_common.constants.funding_bases import FundingBasis
 from origin_common.constants.payment_frequencies import PaymentFrequency
 from origin_common.constants.tenors import Tenor
-
-T = TypeVar("T")
 
 
 class ConstantDescriptor:
@@ -47,11 +45,11 @@ class ConstantDescriptor:
             return self
         return instance.__dict__[self.field.name]
 
-    def __set__(self, instance: models.Model, value: Union[Constant, T, None]):
+    def __set__(self, instance: models.Model, value: Any):
         instance.__dict__[self.field.name] = self.field.to_python(value)
 
 
-class ConstantField(Generic[T], models.Field):
+class ConstantField(models.Field):
     attr_class: type(Constant) = None
     base_type: type = str
     constants: Constants = None
@@ -79,7 +77,7 @@ class ConstantField(Generic[T], models.Field):
     def get_internal_type(self) -> str:
         return self.type_mappings[self.base_type].__name__
 
-    def to_python(self, value: Union[None, T]) -> Union[Constant, None]:
+    def to_python(self, value: Union[None, base_type]) -> Union[Constant, None]:
         try:
             constant = self.constants[value]
         except KeyError:
@@ -91,7 +89,9 @@ class ConstantField(Generic[T], models.Field):
             constant.make_immutable()
             return constant
 
-    def get_prep_value(self, value: Union[Constant, T, None]) -> Union[T, None]:
+    def get_prep_value(
+        self, value: Union[Constant, base_type, None]
+    ) -> Union[base_type, None]:
         if isinstance(value, Constant):
             return value.value
         return value
@@ -108,33 +108,33 @@ class ConstantField(Generic[T], models.Field):
     flatchoices = property(_get_flatchoices)
 
 
-class AdjustmentField(ConstantField[str]):
+class AdjustmentField(ConstantField):
     attr_class = Adjustment
     constants = ADJUSTMENTS
 
 
-class BusinessDayConventionField(ConstantField[str]):
+class BusinessDayConventionField(ConstantField):
     attr_class = BusinessDayConvention
     constants = BUSINESS_DAY_CONVENTIONS
 
 
-class DayCountField(ConstantField[str]):
+class DayCountField(ConstantField):
     attr_class = DayCount
     constants = DAY_COUNTS
 
 
-class FundingBasisField(ConstantField[str]):
+class FundingBasisField(ConstantField):
     attr_class = FundingBasis
     constants = FUNDING_BASES
 
 
-class PaymentFrequencyField(ConstantField[int]):
+class PaymentFrequencyField(ConstantField):
     attr_class = PaymentFrequency
     constants = PAYMENT_FREQUENCIES
     base_type = int
 
 
-class TenorField(ConstantField[timedelta]):
+class TenorField(ConstantField):
     attr_class = Tenor
     constants = TENORS
     base_type = timedelta
