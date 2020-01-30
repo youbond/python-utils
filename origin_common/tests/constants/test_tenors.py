@@ -1004,3 +1004,31 @@ class TestTenorIsCallableTenor(TestCase):
 class TestTenorJsonDumps(TestCase):
     def test_dump_uses_label_instead_of_value(self):
         assert json.dumps(TENORS) == json.dumps([t.label for t in TENORS])
+
+
+class TestTenorComparisons(TestCase):
+    def test_less_than_tenor(self):
+        assert TENORS.ONE_YEAR < TENORS.TWO_YEAR
+        assert TENORS.TWO_YEAR <= TENORS.TWO_YEAR
+
+    def test_less_than_timedelta(self):
+        assert TENORS.ONE_YEAR < TENORS.TWO_YEAR.value
+        assert TENORS.ONE_YEAR <= TENORS.TWO_YEAR.value
+        assert TENORS.ONE_YEAR.value < TENORS.TWO_YEAR
+        assert TENORS.TWO_YEAR.value <= TENORS.TWO_YEAR
+
+    def test_cannot_compare_to_other_objects(self):
+        with self.assertRaises(TypeError):
+            assert TENORS.ONE_YEAR < 100
+        with self.assertRaises(TypeError):
+            assert TENORS.ONE_YEAR >= 1
+
+    def test_greater_than_tenor(self):
+        assert TENORS.TWO_YEAR > TENORS.ONE_YEAR
+        assert TENORS.TWO_YEAR >= TENORS.TWO_YEAR
+
+    def test_greater_than_timedelta(self):
+        assert TENORS.TWO_YEAR.value > TENORS.ONE_YEAR
+        assert TENORS.TWO_YEAR.value >= TENORS.ONE_YEAR
+        assert TENORS.TWO_YEAR > TENORS.ONE_YEAR.value
+        assert TENORS.TWO_YEAR >= TENORS.TWO_YEAR.value
