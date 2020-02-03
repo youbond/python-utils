@@ -1,7 +1,12 @@
 import re
 from datetime import timedelta
 
-from origin_common.constants.base import Constant, Constants
+from origin_common.constants.base import (
+    OPERATOR_METHODS,
+    Constant,
+    Constants,
+    perform_on_constant,
+)
 
 SECONDS_IN_A_DAY = 86400.0
 DAYS_IN_A_YEAR = 365.25
@@ -15,31 +20,27 @@ ONE_YEAR_TIMEDELTA = timedelta(days=1 * DAYS_IN_A_YEAR)
 
 
 class Tenor(Constant[timedelta]):
+    __dunders_already_set = False
+
+    def __new__(cls, *args, **kwargs):
+        obj = super().__new__(cls, *args, **kwargs)
+        if cls.__dunders_already_set:
+            return obj
+
+        for attr in OPERATOR_METHODS:
+            try:
+                operation = getattr(timedelta, attr)
+            except AttributeError:
+                pass
+            else:
+                setattr(cls, attr, perform_on_constant(operation))
+        cls.__dunders_already_set = True
+        return obj
+
     def __init__(self, value: timedelta, label: str, color_code: str):
         super().__init__(value, label)
         self.color_code = color_code
         self.number_of_months = self.get_tenor_months_calculation()
-
-    def _get_compare_value(self, other):
-        if isinstance(other, Tenor):
-            return other.value
-        if isinstance(other, timedelta):
-            return other
-        raise TypeError(
-            f"Cannot compare instances of '{type(self).__name__}' and '{type(other).__name__}'"
-        )
-
-    def __lt__(self, other):
-        return self.value < self._get_compare_value(other)
-
-    def __le__(self, other):
-        return self.value <= self._get_compare_value(other)
-
-    def __gt__(self, other):
-        return self.value > self._get_compare_value(other)
-
-    def __ge__(self, other):
-        return self.value >= self._get_compare_value(other)
 
     def get_tenor_months_calculation(self) -> float:
         if self.label == "O/N":
