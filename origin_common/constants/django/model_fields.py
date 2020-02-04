@@ -7,6 +7,7 @@ from django.db import models
 from origin_common.constants import (
     ADJUSTMENTS,
     BUSINESS_DAY_CONVENTIONS,
+    CURRENCIES,
     DAY_COUNTS,
     FUNDING_BASES,
     PAYMENT_FREQUENCIES,
@@ -15,6 +16,7 @@ from origin_common.constants import (
 from origin_common.constants.adjustments import Adjustment
 from origin_common.constants.base import Constant, Constants
 from origin_common.constants.business_day_conventions import BusinessDayConvention
+from origin_common.constants.currencies import Currency
 from origin_common.constants.day_counts import DayCount
 from origin_common.constants.funding_bases import FundingBasis
 from origin_common.constants.payment_frequencies import PaymentFrequency
@@ -116,6 +118,11 @@ class AdjustmentField(ConstantField):
 class BusinessDayConventionField(ConstantField):
     attr_class = BusinessDayConvention
     constants = BUSINESS_DAY_CONVENTIONS
+
+
+class CurrencyField(ConstantField):
+    attr_class = Currency
+    constants = CURRENCIES
 
 
 class DayCountField(ConstantField):

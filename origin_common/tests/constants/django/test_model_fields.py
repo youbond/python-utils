@@ -10,6 +10,7 @@ from django.db import models
 from origin_common.constants import (
     ADJUSTMENTS,
     BUSINESS_DAY_CONVENTIONS,
+    CURRENCIES,
     DAY_COUNTS,
     FUNDING_BASES,
     PAYMENT_FREQUENCIES,
@@ -20,6 +21,7 @@ from origin_common.constants.django.model_fields import (
     AdjustmentField,
     BusinessDayConventionField,
     ConstantField,
+    CurrencyField,
     DayCountField,
     FundingBasisField,
     PaymentFrequencyField,
@@ -137,6 +139,13 @@ class TestAdjustmentField(ConstantFieldTestBase, TestCase):
 class TestBusinessDayConventionField(ConstantFieldTestBase, TestCase):
     field_cls = BusinessDayConventionField
     constants = BUSINESS_DAY_CONVENTIONS
+    base_type = str
+    base_model_field = models.CharField
+
+
+class TestCurrencyField(ConstantFieldTestBase, TestCase):
+    field_cls = CurrencyField
+    constants = CURRENCIES
     base_type = str
     base_model_field = models.CharField
 
