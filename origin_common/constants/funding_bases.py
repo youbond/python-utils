@@ -752,15 +752,11 @@ class FundingBases(Constants[FundingBasis]):
         pricing=False,
     )
     RON_FIXED = FixedFundingBasis(
-        value="FIXED_RON",
-        currency="RON",
-        symbol="RON",
+        currency=CURRENCIES.RON,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
         day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
         sorting=388,
-        label="RON Fixed",
         pricing=False,
-        legal_label="Fixed Rate RON",
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
     )

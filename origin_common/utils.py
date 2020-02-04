@@ -64,8 +64,8 @@ def join_list(
     list_copy = list(object_list)
     last = list_copy.pop()
     if list_copy:
-        return "{}{}{}".format(delimiter.join(list_copy), last_delimiter, last)
-    return "{}".format(last)
+        return f"{delimiter.join(list_copy)}{last_delimiter}{last}"
+    return f"{last}"
 
 
 def string_to_timedelta(input_string, return_units=False):
@@ -86,7 +86,7 @@ def string_to_timedelta(input_string, return_units=False):
             )
             start = timedelta(days=total_days)
         if end < start:
-            raise ValueError('Invalid input "{}"!'.format(input_string))
+            raise ValueError(f'Invalid input "{input_string}"!')
         return start, end
 
     match = TIMEDELTA_STRING_REGEX.match(input_string)
@@ -96,7 +96,7 @@ def string_to_timedelta(input_string, return_units=False):
             if return_units:
                 return timedelta(days=1), "O/N"
             return timedelta(days=1)
-        raise ValueError('Invalid input "{}"!'.format(input_string))
+        raise ValueError(f'Invalid input "{input_string}"!')
 
     period_start, units = match.groups()
 
@@ -133,13 +133,11 @@ def timedelta_to_string(
     if for_quantlib and isinstance(value, float):
         int_part, decimal_part = str(value).split(".")
         return "{}{}".format(
-            timedelta_to_string(string_to_timedelta("{}{}".format(int_part, units))),
-            timedelta_to_string(
-                string_to_timedelta("0.{}{}".format(decimal_part, units))
-            ),
+            timedelta_to_string(string_to_timedelta(f"{int_part}{units}")),
+            timedelta_to_string(string_to_timedelta(f"0.{decimal_part}{units}")),
         )
     if only_initial:
-        return "{}{}".format(value, units)
+        return f"{value}{units}"
     if value > 1:
-        return "{} {}s".format(value, expand_duration_unit(units))
-    return "{} {}".format(value, expand_duration_unit(units))
+        return f"{value} {expand_duration_unit(units)}s"
+    return f"{value} {expand_duration_unit(units)}"

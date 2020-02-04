@@ -12,18 +12,14 @@ class SerializerTestMixin:
         pass
 
     def test_all_fields_are_tested(self):
-        assertion_message = "'{serializer}' does not have any fields to test.".format(
-            serializer=self.serializer
-        )
+        assertion_message = f"'{self.serializer}' does not have any fields to test."
         assert hasattr(self.serializer, "fields") and hasattr(
             self.serializer.fields, "items"
         ), assertion_message
         missing_tests = []
         for field_name in self.serializer.fields.keys():
-            if not hasattr(self, "test_{}_field".format(field_name)):
+            if not hasattr(self, f"test_{field_name}_field"):
                 missing_tests.append(field_name)
         assert (
             not missing_tests
-        ), "Tests are missing for the following fields: {}.".format(
-            ", ".join(missing_tests)
-        )
+        ), f"Tests are missing for the following fields: {', '.join(missing_tests)}."

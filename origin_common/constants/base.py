@@ -1,8 +1,73 @@
 from collections import OrderedDict
 from json import JSONEncoder
-from typing import Any, Dict, Generator, Generic, Set, Tuple, TypeVar, Union
+from typing import Any, Callable, Dict, Generator, Generic, Set, Tuple, TypeVar, Union
 
 T = TypeVar("T")
+
+OPERATOR_METHODS = {
+    # only left & right binary operations can be supported by passing through
+    # to the value. In place operations don't make sense on constants.
+    "__add__",
+    "__sub__",
+    "__mul__",
+    "__matmul__",
+    "__truediv__",
+    "__floordiv__",
+    "__mod__",
+    "__divmod__",
+    "__pow__",
+    "__lshift__",
+    "__rshift__",
+    "__and__",
+    "__xor__",
+    "__or__",
+    "__radd__",
+    "__rsub__",
+    "__rmul__",
+    "__rmatmul__",
+    "__rtruediv__",
+    "__rfloordiv__",
+    "__rmod__",
+    "__rdivmod__",
+    "__rpow__",
+    "__rlshift__",
+    "__rrshift__",
+    "__rand__",
+    "__rxor__",
+    "__ror__",
+    "__le__",
+    "__lt__",
+    "__ge__",
+    "__gt__",
+}
+
+
+def perform_on_constant(operation: Callable) -> Callable:
+    """
+    Modifies the given operation so that it can work with Constant values.
+    If both operands to the operation are Constant the operation is performed
+    only if they are of the same type. If either is a Constant, it's value is
+    used instead.
+    Example:
+    The following would work:
+        Tenor + timedelta
+        Tenor + Tenor
+    But not operations like
+        Tenor + PaymentFrequency
+    """
+
+    def operate(self, other, *optional):
+        if isinstance(self, Constant):
+            if isinstance(other, Constant):
+                if type(self) == type(other):
+                    return operation(self.value, other.value, *optional)
+            else:
+                return operation(self.value, other, *optional)
+        if isinstance(other, Constant):
+            other = other.value
+        return operation(self, other, *optional)
+
+    return operate
 
 
 class ImmutableMixin:
@@ -33,15 +98,13 @@ class Constant(Generic[T], ImmutableMixin):
 
     def __str__(self) -> str:
         return ", ".join(
-            "{}={}".format(key, value)
+            f"{key}={value}"
             for key, value in self.__dict__.items()
             if not key.startswith("_")
         )
 
     def __repr__(self):
-        return "<{}: {} at {}>".format(
-            self.__class__.__name__, str(self), hex(id(self))
-        )
+        return f"<{self.__class__.__name__}: {self} at {hex(id(self))}>"
 
     def __eq__(self, other):
         if type(self) == type(other):

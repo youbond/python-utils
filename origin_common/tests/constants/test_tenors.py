@@ -1,5 +1,6 @@
 import json
 from datetime import timedelta
+from random import choice
 from unittest import TestCase
 
 from origin_common.constants import TENORS
@@ -1004,3 +1005,106 @@ class TestTenorIsCallableTenor(TestCase):
 class TestTenorJsonDumps(TestCase):
     def test_dump_uses_label_instead_of_value(self):
         assert json.dumps(TENORS) == json.dumps([t.label for t in TENORS])
+
+
+class TestTenorComparisons(TestCase):
+    def test_less_than_tenor(self):
+        assert TENORS.ONE_YEAR < TENORS.TWO_YEAR
+        assert TENORS.TWO_YEAR <= TENORS.TWO_YEAR
+
+    def test_less_than_timedelta(self):
+        assert TENORS.ONE_YEAR < TENORS.TWO_YEAR.value
+        assert TENORS.ONE_YEAR <= TENORS.TWO_YEAR.value
+        assert TENORS.ONE_YEAR.value < TENORS.TWO_YEAR
+        assert TENORS.TWO_YEAR.value <= TENORS.TWO_YEAR
+
+    def test_cannot_compare_to_other_objects(self):
+        with self.assertRaises(TypeError):
+            assert TENORS.ONE_YEAR < 100
+        with self.assertRaises(TypeError):
+            assert TENORS.ONE_YEAR >= 1
+
+    def test_greater_than_tenor(self):
+        assert TENORS.ONE_YEAR + TENORS.TWO_YEAR == TENORS.THREE_YEAR
+        assert TENORS.TWO_YEAR > TENORS.ONE_YEAR
+        assert TENORS.TWO_YEAR >= TENORS.TWO_YEAR
+
+    def test_greater_than_timedelta(self):
+        assert TENORS.TWO_YEAR.value > TENORS.ONE_YEAR
+        assert TENORS.TWO_YEAR.value >= TENORS.ONE_YEAR
+        assert TENORS.TWO_YEAR > TENORS.ONE_YEAR.value
+        assert TENORS.TWO_YEAR >= TENORS.TWO_YEAR.value
+
+
+def years(number_of_years: int) -> timedelta:
+    return timedelta(DAYS_IN_A_YEAR * number_of_years)
+
+
+class TestTenorArithmetic(TestCase):
+    def test_can_add_constants(self):
+        assert TENORS.ONE_YEAR + TENORS.TWO_YEAR == TENORS.THREE_YEAR.value
+
+    def test_can_add_timedelta(self):
+        assert TENORS.ONE_YEAR + years(2) == TENORS.THREE_YEAR.value
+        assert years(2) + TENORS.ONE_YEAR == TENORS.THREE_YEAR.value
+
+    def test_can_subtract_constants(self):
+        assert TENORS.THREE_YEAR - TENORS.TWO_YEAR == TENORS.ONE_YEAR.value
+
+    def test_can_subtract_timedelta(self):
+        assert TENORS.FIVE_YEAR - years(2) == TENORS.THREE_YEAR.value
+        assert years(5) - TENORS.TWO_YEAR == TENORS.THREE_YEAR.value
+
+    def test_can_multiply_integer(self):
+        assert TENORS.ONE_YEAR * 2 == TENORS.TWO_YEAR.value
+        assert 2 * TENORS.ONE_YEAR == TENORS.TWO_YEAR.value
+
+    def test_can_multiply_float(self):
+        assert TENORS.ONE_YEAR * 1.5 == TENORS.ONE_AND_HALF_YEAR.value
+        assert 1.5 * TENORS.ONE_YEAR == TENORS.ONE_AND_HALF_YEAR.value
+
+    def test_can_divide_by_constant(self):
+        assert TENORS.ONE_AND_HALF_YEAR // TENORS.ONE_YEAR == 1
+        assert TENORS.ONE_AND_HALF_YEAR / TENORS.ONE_YEAR == 1.5
+
+    def test_can_multiply_timedelta(self):
+        assert TENORS.ONE_AND_HALF_YEAR // years(1) == 1
+        assert TENORS.ONE_AND_HALF_YEAR / years(1) == 1.5
+
+    def test_can_divide_by_integer(self):
+        assert TENORS.ONE_YEAR // 12 == timedelta(DAYS_IN_A_MONTH)
+
+    def test_can_divide_by_float(self):
+        assert TENORS.ONE_YEAR / DAYS_IN_A_MONTH == timedelta(12)
+
+    def test_disallowed_computations(self):
+        # copied from Python tests for timedelta. Altered to use Tenor
+        # https://github.com/python/cpython/blob/master/Lib/test/datetimetester.py
+        a = choice(list(TENORS))
+
+        # Add/sub ints, floats, str should be illegal
+        for i in 1, 1.0, "":
+            self.assertRaises(TypeError, lambda: a + i)
+            self.assertRaises(TypeError, lambda: a - i)
+            self.assertRaises(TypeError, lambda: i + a)
+            self.assertRaises(TypeError, lambda: i - a)
+
+        # Mul by tenor, timedelta, str isn't supported.
+        for x in TENORS.OVERNIGHT, timedelta(1), "":
+            self.assertRaises(TypeError, lambda: a * x)
+            self.assertRaises(TypeError, lambda: x * a)
+
+        # Div by str or of str isn't supported.
+        self.assertRaises(TypeError, lambda: a * "")
+        self.assertRaises(TypeError, lambda: "" * a)
+        self.assertRaises(TypeError, lambda: a / "")
+        self.assertRaises(TypeError, lambda: "" / a)
+        self.assertRaises(TypeError, lambda: a // "")
+        self.assertRaises(TypeError, lambda: "" // a)
+
+        # Division of int by tenor doesn't make sense.
+        # Division by zero doesn't make sense.
+        self.assertRaises(TypeError, lambda: 0 // a)
+        self.assertRaises(TypeError, lambda: 0.0 / a)
+        self.assertRaises(ZeroDivisionError, lambda: a // 0)
+        self.assertRaises(ZeroDivisionError, lambda: a / 0.0)

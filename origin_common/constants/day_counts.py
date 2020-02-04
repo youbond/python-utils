@@ -2,8 +2,7 @@ from origin_common.constants.base import Constant, Constants
 
 
 class DayCount(Constant[str]):
-    def __init__(self, value: str, label: str):
-        super().__init__(value, label)
+    pass
 
 
 class DayCounts(Constants):

@@ -1,3 +1,4 @@
+from random import choice
 from unittest import TestCase
 
 from origin_common.constants import (
@@ -1347,6 +1348,26 @@ class TestMTNFundingBasesOrder(TestCase):
             for basis in sorted(MTN_FUNDING_BASES, key=lambda x: x.sorting)
         )
         assert MTN_FUNDING_BASES.to_django_choices() == expected
+
+    def test_django_choices_for_callable_basis(self):
+        rand_bool = choice([True, False])
+        expected = tuple(
+            (basis.value, basis.label)
+            for basis in sorted(MTN_FUNDING_BASES, key=lambda x: x.sorting)
+            if basis.is_callable_basis is rand_bool
+        )
+        actual = MTN_FUNDING_BASES.to_django_choices(is_callable_basis=rand_bool)
+        assert actual == expected
+
+    def test_django_choices_for_pricing(self):
+        rand_bool = choice([True, False])
+        expected = tuple(
+            (basis.value, basis.label)
+            for basis in sorted(MTN_FUNDING_BASES, key=lambda x: x.sorting)
+            if basis.pricing is rand_bool
+        )
+        actual = MTN_FUNDING_BASES.to_django_choices(pricing=rand_bool)
+        assert actual == expected
 
 
 class TestCDFundingBasesOrder(TestCase):

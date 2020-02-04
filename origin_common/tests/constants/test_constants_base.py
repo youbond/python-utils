@@ -1,7 +1,8 @@
 import json
+import operator
 from unittest import TestCase
 
-from origin_common.constants.base import Constant, Constants
+from origin_common.constants.base import Constant, Constants, perform_on_constant
 
 
 class TestConstant(TestCase):
@@ -16,7 +17,7 @@ class TestConstant(TestCase):
 
     def test_representation(self):
         const = Constant(value=123, label="Foo")
-        assert repr(const) == "<Constant: {} at {}>".format(const, hex(id(const)))
+        assert repr(const) == f"<Constant: {const} at {hex(id(const))}>"
 
     def test_equality(self):
         const = Constant(value=123, label="Foo")
@@ -169,3 +170,41 @@ class TestConstants(TestCase):
 
         dummy = Dummy()
         assert json.dumps(dummy) == json.dumps([c.value for c in dummy])
+
+
+class TestPerformOnConstant(TestCase):
+    def test_if_both_operands_are_constants_it_uses_value_of_both(self):
+        c1 = Constant(1, "one")
+        c2 = Constant(2, "two")
+        operation = perform_on_constant(operator.add)
+        assert operation(c1, c2) == 3
+
+    def test_if_right_operand_is_not_a_constant_it_uses_it_directly(self):
+        c1 = Constant(1, "one")
+        operation = perform_on_constant(operator.add)
+        assert operation(c1, 2) == 3
+
+    def test_if_left_operand_is_not_a_constant_it_uses_it_directly(self):
+        c1 = Constant(1, "one")
+        operation = perform_on_constant(operator.add)
+        assert operation(2, c1) == 3
+
+    def test_if_right_operand_is_a_different_type_of_constant_it_uses_it_directly(self):
+        class T1(Constant):
+            pass
+
+        class T2(Constant):
+            pass
+
+        c1 = T1(1, "one")
+        c2 = T2(2, "Two")
+        # even though values are of the same type, since they are different constants
+        # they cannot be compared.
+        operation = perform_on_constant(operator.add)
+        with self.assertRaises(TypeError):
+            assert operation(c1, c2)
+
+    def test_optional_arguments_can_be_provided(self):
+        c1 = Constant(3, "foo")
+        operation = perform_on_constant(pow)
+        assert operation(c1, 3, 4) == 3
