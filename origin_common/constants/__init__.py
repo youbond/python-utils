@@ -1,5 +1,6 @@
 from origin_common.constants.adjustments import ADJUSTMENTS
 from origin_common.constants.business_day_conventions import BUSINESS_DAY_CONVENTIONS
+from origin_common.constants.currencies import CURRENCIES
 from origin_common.constants.day_counts import DAY_COUNTS
 from origin_common.constants.funding_bases import (
     BASIS_TYPE_FIXED,
