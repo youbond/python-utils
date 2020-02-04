@@ -1203,6 +1203,27 @@ class TestZARFIXEDBasis(BasisTestCase):
     }
 
 
+class TestRONFIXEDBasis(BasisTestCase):
+    basis = FUNDING_BASES.RON_FIXED
+    is_fixed_basis = True
+    attributes = {
+        "value": "FIXED_RON",
+        "currency": "RON",
+        "symbol": "RON",
+        "basis_type": "fixed",
+        "index": 0,
+        "payment_frequency": PAYMENT_FREQUENCIES.ANNUALLY,
+        "day_count": DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
+        "sorting": 388,
+        "label": "RON Fixed",
+        "is_callable_basis": False,
+        "pricing": False,
+        "legal_label": "Fixed Rate RON",
+        "adjustment": ADJUSTMENTS.UNADJUSTED,
+        "business_day_convention": BUSINESS_DAY_CONVENTIONS.FOLLOWING,
+    }
+
+
 class TestBTPBasis(BasisTestCase):
     basis = FUNDING_BASES.BTP
     is_govie_basis = True
