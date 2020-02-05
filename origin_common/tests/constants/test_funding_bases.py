@@ -357,7 +357,7 @@ class TestGBPFIXEDBasisForCD(BasisTestCase):
         "basis_type": "fixed",
         "index": 0,
         "payment_frequency": PAYMENT_FREQUENCIES.ANNUALLY,
-        "day_count": DAY_COUNTS.ACTUAL_365_NL,
+        "day_count": DAY_COUNTS.ACTUAL_365,
         "sorting": 100,
         "label": "GBP Fixed",
         "is_callable_basis": False,

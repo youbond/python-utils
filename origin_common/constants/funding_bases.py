@@ -870,7 +870,7 @@ class CDFundingBases(FundingBases):
         self.GBP_FIXED = FixedFundingBasis(
             currency=CURRENCIES.GBP,
             payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
-            day_count=DAY_COUNTS.ACTUAL_365_NL,
+            day_count=DAY_COUNTS.ACTUAL_365,
             sorting=100,
             adjustment=ADJUSTMENTS.ADJUSTED,
             business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
