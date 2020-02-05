@@ -1,8 +1,14 @@
 import json
 import operator
+from datetime import date
 from unittest import TestCase
 
-from origin_common.constants.base import Constant, Constants, perform_on_constant
+from origin_common.constants.base import (
+    Constant,
+    Constants,
+    DuplicateConstantError,
+    perform_on_constant,
+)
 
 
 class TestConstant(TestCase):
@@ -45,6 +51,21 @@ class TestConstant(TestCase):
         const = Constant(value=123, label="Foo")
         assert json.dumps(const) == json.dumps(const.value)
 
+    def test_string_formatting(self):
+        values_to_test = (
+            "string",
+            1.234567,
+            100,
+            date(2020, 2, 5),
+        )
+        for value in values_to_test:
+            const = Constant(value, "foo")
+            assert f"{const}" == f"{value}"
+        # format spec is passed down
+        value = 999.99999238823
+        const = Constant(value, "foo")
+        assert f"{const:,.2}" == f"{value:,.2}"
+
 
 class TestConstants(TestCase):
     def test_is_singleton(self):
@@ -64,8 +85,8 @@ class TestConstants(TestCase):
         class Dummy(Constants):
             c1 = Constant(1, "one")
             c2 = Constant(2, "two")
-            c3 = Constant(2, "two")
-            c4 = Constant(2, "two")
+            c3 = Constant(3, "three")
+            c4 = Constant(4, "four")
 
         assert list(Dummy()) == [Dummy.c1, Dummy.c2, Dummy.c3, Dummy.c4]
 
@@ -170,6 +191,21 @@ class TestConstants(TestCase):
 
         dummy = Dummy()
         assert json.dumps(dummy) == json.dumps([c.value for c in dummy])
+
+    def test_cannot_have_duplicate_values(self):
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+            c2 = Constant(1, "two")
+
+        with self.assertRaises(DuplicateConstantError):
+            Dummy()
+
+        class Dummy(Constants):
+            c1 = Constant(1, "one")
+
+        d = Dummy()
+        with self.assertRaises(DuplicateConstantError):
+            d.c3 = Constant(1, "one")
 
 
 class TestPerformOnConstant(TestCase):

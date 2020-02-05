@@ -70,6 +70,13 @@ def perform_on_constant(operation: Callable) -> Callable:
     return operate
 
 
+class DuplicateConstantError(Exception):
+    def __init__(self, value):
+        super().__init__()
+        self.value = value
+        self.message = f"Multiple constants have the same value '{value}'"
+
+
 class ImmutableMixin:
     _mutable = True
 
@@ -103,20 +110,17 @@ class Constant(Generic[T], ImmutableMixin):
             if not key.startswith("_")
         )
 
+    def __format__(self, format_spec):
+        return f"{self.value:{format_spec}}"
+
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self} at {hex(id(self))}>"
 
     def __eq__(self, other):
-        if type(self) == type(other):
-            return hash(self) == hash(other)
-        return self.value == other
+        return hash(self) == hash(other)
 
     def __hash__(self) -> int:
-        return hash(
-            tuple(
-                value for key, value in self.__dict__.items() if not key.startswith("_")
-            )
-        )
+        return hash(self.value)
 
     def to_json(self):
         return self.value
@@ -143,6 +147,11 @@ class Constants(Generic[C], ImmutableMixin):
                 if not attr_name.startswith("_")
                 and isinstance(getattr(cls, attr_name), Constant)
             ]
+            seen = set()
+            for constant in fields:
+                if constant in seen:
+                    raise DuplicateConstantError(constant)
+                seen.add(constant)
 
             cls._ordered_fields = OrderedDict(
                 sorted(((f._creation_counter, f) for f in fields), key=lambda i: i[0])
@@ -154,26 +163,21 @@ class Constants(Generic[C], ImmutableMixin):
             yield field
 
     def __getitem__(self, item: Union[C, T]) -> C:
-        if isinstance(item, Constant):
-            if item in self:
-                return item
-            raise KeyError(item)
         return self._value_to_object_mapping[item]
 
     def __contains__(self, item: Union[C, T]) -> bool:
-        if isinstance(item, Constant):
-            return item in self._values
         return item in self._value_to_object_mapping
 
     def __len__(self) -> int:
-        return len(self._values)
+        return len(self._value_to_object_mapping)
 
     def __setattr__(self, key: str, value: Any) -> None:
-        # this will be replaced after init to prevent changing the constants
-        if not key.startswith("_") and hasattr(value, "_creation_counter"):
+        if not key.startswith("_") and isinstance(value, Constant):
             counter = value._creation_counter
             if hasattr(self, key):
                 counter = getattr(self, key)._creation_counter
+            elif value in self:
+                raise DuplicateConstantError(value)
             self._ordered_fields[counter] = value
         super().__setattr__(key, value)
 
@@ -188,13 +192,6 @@ class Constants(Generic[C], ImmutableMixin):
 
     def get_by_label(self, label: str) -> C:
         return self._label_to_object_mapping[label]
-
-    @property
-    def _values(self) -> Set[C]:
-        if self.__object_set is None:
-            # quicker for lookups
-            self.__object_set = set(self)
-        return self.__object_set
 
     @property
     def _value_to_object_mapping(self) -> Dict[T, C]:
