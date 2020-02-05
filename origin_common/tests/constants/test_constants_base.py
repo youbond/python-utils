@@ -1,5 +1,6 @@
 import json
 import operator
+from datetime import date
 from unittest import TestCase
 
 from origin_common.constants.base import Constant, Constants, perform_on_constant
@@ -44,6 +45,21 @@ class TestConstant(TestCase):
     def test_json_dumps(self):
         const = Constant(value=123, label="Foo")
         assert json.dumps(const) == json.dumps(const.value)
+
+    def test_string_formatting(self):
+        values_to_test = (
+            "string",
+            1.234567,
+            100,
+            date(2020, 2, 5),
+        )
+        for value in values_to_test:
+            const = Constant(value, "foo")
+            assert f"{const}" == f"{value}"
+        # format spec is passed down
+        value = 999.99999238823
+        const = Constant(value, "foo")
+        assert f"{const:,.2}" == f"{value:,.2}"
 
 
 class TestConstants(TestCase):
