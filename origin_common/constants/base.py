@@ -70,6 +70,13 @@ def perform_on_constant(operation: Callable) -> Callable:
     return operate
 
 
+class DuplicateConstantError(Exception):
+    def __init__(self, value):
+        super().__init__()
+        self.value = value
+        self.message = f"Multiple constants have the same value '{value}'"
+
+
 class ImmutableMixin:
     _mutable = True
 
@@ -140,6 +147,11 @@ class Constants(Generic[C], ImmutableMixin):
                 if not attr_name.startswith("_")
                 and isinstance(getattr(cls, attr_name), Constant)
             ]
+            seen = set()
+            for constant in fields:
+                if constant in seen:
+                    raise DuplicateConstantError(constant)
+                seen.add(constant)
 
             cls._ordered_fields = OrderedDict(
                 sorted(((f._creation_counter, f) for f in fields), key=lambda i: i[0])
@@ -160,11 +172,12 @@ class Constants(Generic[C], ImmutableMixin):
         return len(self._value_to_object_mapping)
 
     def __setattr__(self, key: str, value: Any) -> None:
-        # this will be replaced after init to prevent changing the constants
-        if not key.startswith("_") and hasattr(value, "_creation_counter"):
+        if not key.startswith("_") and isinstance(value, Constant):
             counter = value._creation_counter
             if hasattr(self, key):
                 counter = getattr(self, key)._creation_counter
+            elif value in self:
+                raise DuplicateConstantError(value)
             self._ordered_fields[counter] = value
         super().__setattr__(key, value)
 
