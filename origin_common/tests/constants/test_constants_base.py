@@ -244,3 +244,12 @@ class TestPerformOnConstant(TestCase):
         c1 = Constant(3, "foo")
         operation = perform_on_constant(pow)
         assert operation(c1, 3, 4) == 3
+
+
+class TestJsonDumps(TestCase):
+    def test_original_function_still_works_for_non_constants(self):
+        class Foo:
+            pass
+
+        with self.assertRaises(TypeError):
+            json.dumps(Foo())
