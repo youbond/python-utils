@@ -257,7 +257,7 @@ class TestDayCountLabels(TestCase):
         assert CURRENCIES.QAR.label == "Qatari Rial (QAR)"
 
     def test_ron_label(self):
-        assert CURRENCIES.RON.label == "New Leu (RON)"
+        assert CURRENCIES.RON.label == "Romanian Leu (RON)"
 
     def test_rsd_label(self):
         assert CURRENCIES.RSD.label == "Serbian Dinar (RSD)"

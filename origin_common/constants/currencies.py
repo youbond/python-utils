@@ -189,7 +189,7 @@ class Currencies(Constants[Currency]):
     )
     RON = Currency(
         value="RON",
-        label="New Leu",
+        label="Romanian Leu",
         # symbol="L",
     )
     RSD = Currency(
