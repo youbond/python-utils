@@ -19,10 +19,10 @@ class Currency(Constant[str]):
 
 
 class Currencies(Constants[Currency]):
-    USD = Currency(value="USD", name="US Dollar", symbol="$", is_g10=True, )
-    EUR = Currency(value="EUR", name="Euro", symbol="€", is_g10=True, )
-    GBP = Currency(value="GBP", name="Pound Sterling", symbol="£", is_g10=True, )
-    JPY = Currency(value="JPY", name="Yen", symbol="¥", is_g10=True, )
+    USD = Currency(value="USD", name="US Dollar", symbol="$", is_g10=True,)
+    EUR = Currency(value="EUR", name="Euro", symbol="€", is_g10=True,)
+    GBP = Currency(value="GBP", name="Pound Sterling", symbol="£", is_g10=True,)
+    JPY = Currency(value="JPY", name="Yen", symbol="¥", is_g10=True,)
     CHF = Currency(
         value="CHF",
         name="Swiss Franc",
@@ -145,8 +145,8 @@ class Currencies(Constants[Currency]):
         name="Iceland Krona",
         # symbol="Kr",
     )
-    KGS = Currency(value="KGS", name="Som", )
-    KRW = Currency(value="KRW", name="Won", symbol="₩", )
+    KGS = Currency(value="KGS", name="Som",)
+    KRW = Currency(value="KRW", name="Won", symbol="₩",)
     KZT = Currency(
         value="KZT",
         name="Tenge",
