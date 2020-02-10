@@ -50,3 +50,37 @@ class TestPaymentFrequencyOrder(TestCase):
             (pf.ANNUALLY.value, pf.ANNUALLY.label),
         )
         assert pf.to_django_choices() == expected
+
+
+class TestPaymentFrequencyComparisons(TestCase):
+    def test_less_than_payment_frequency(self):
+        assert PAYMENT_FREQUENCIES.AT_MATURITY < PAYMENT_FREQUENCIES.ANNUALLY
+        assert PAYMENT_FREQUENCIES.ANNUALLY <= PAYMENT_FREQUENCIES.ANNUALLY
+
+    def test_less_than_integer(self):
+        assert PAYMENT_FREQUENCIES.AT_MATURITY < PAYMENT_FREQUENCIES.ANNUALLY.value
+        assert PAYMENT_FREQUENCIES.AT_MATURITY <= PAYMENT_FREQUENCIES.ANNUALLY.value
+        assert PAYMENT_FREQUENCIES.AT_MATURITY.value < PAYMENT_FREQUENCIES.ANNUALLY
+        assert PAYMENT_FREQUENCIES.ANNUALLY.value <= PAYMENT_FREQUENCIES.ANNUALLY
+
+    def test_cannot_compare_to_other_objects(self):
+        with self.assertRaises(TypeError):
+            assert PAYMENT_FREQUENCIES.AT_MATURITY < "Foo"
+        with self.assertRaises(TypeError):
+            assert PAYMENT_FREQUENCIES.AT_MATURITY >= "Bar"
+
+    def test_cannot_compare_to_non_payment_frequency_integers(self):
+        with self.assertRaises(TypeError):
+            assert PAYMENT_FREQUENCIES.AT_MATURITY < 10
+        with self.assertRaises(TypeError):
+            assert PAYMENT_FREQUENCIES.AT_MATURITY >= -1
+
+    def test_greater_than_payment_frequency(self):
+        assert PAYMENT_FREQUENCIES.ANNUALLY > PAYMENT_FREQUENCIES.AT_MATURITY
+        assert PAYMENT_FREQUENCIES.ANNUALLY >= PAYMENT_FREQUENCIES.ANNUALLY
+
+    def test_greater_than_integer(self):
+        assert PAYMENT_FREQUENCIES.ANNUALLY.value > PAYMENT_FREQUENCIES.AT_MATURITY
+        assert PAYMENT_FREQUENCIES.ANNUALLY.value >= PAYMENT_FREQUENCIES.AT_MATURITY
+        assert PAYMENT_FREQUENCIES.ANNUALLY > PAYMENT_FREQUENCIES.AT_MATURITY.value
+        assert PAYMENT_FREQUENCIES.ANNUALLY >= PAYMENT_FREQUENCIES.ANNUALLY.value

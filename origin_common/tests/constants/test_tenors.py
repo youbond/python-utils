@@ -1025,7 +1025,6 @@ class TestTenorComparisons(TestCase):
             assert TENORS.ONE_YEAR >= 1
 
     def test_greater_than_tenor(self):
-        assert TENORS.ONE_YEAR + TENORS.TWO_YEAR == TENORS.THREE_YEAR
         assert TENORS.TWO_YEAR > TENORS.ONE_YEAR
         assert TENORS.TWO_YEAR >= TENORS.TWO_YEAR
 

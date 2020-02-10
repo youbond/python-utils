@@ -219,6 +219,36 @@ class Constants(Generic[C], ImmutableMixin):
         return [o.to_json() for o in self]
 
 
+def add_sorting_functions(
+    constant_cls: type(Constant), constants_iterable: Constants
+) -> None:
+    def get_compare_value(other) -> Constant:
+        try:
+            return constants_iterable[other]
+        except KeyError:
+            pass
+        raise TypeError(
+            f"Cannot compare instances of '{constant_cls.__name__}' and '{type(other).__name__}'"
+        )
+
+    def __lt__(self, other):
+        return self._creation_counter < get_compare_value(other)._creation_counter
+
+    def __le__(self, other):
+        return self._creation_counter <= get_compare_value(other)._creation_counter
+
+    def __gt__(self, other):
+        return self._creation_counter > get_compare_value(other)._creation_counter
+
+    def __ge__(self, other):
+        return self._creation_counter >= get_compare_value(other)._creation_counter
+
+    constant_cls.__lt__ = __lt__
+    constant_cls.__le__ = __le__
+    constant_cls.__gt__ = __gt__
+    constant_cls.__ge__ = __ge__
+
+
 def encode_default(self, obj):
     if isinstance(obj, (Constant, Constants)):
         return obj.to_json()

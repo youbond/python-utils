@@ -730,3 +730,37 @@ class TestCurrenciesGetName(TestCase):
     def test_returns_name_of_given_currency_value(self):
         constant = choice(list(CURRENCIES))
         assert CURRENCIES.get_name(constant.value) == constant.name
+
+
+class TestCurrencyComparisons(TestCase):
+    def test_less_than_currency(self):
+        assert CURRENCIES.USD < CURRENCIES.EUR
+        assert CURRENCIES.EUR <= CURRENCIES.EUR
+
+    def test_less_than_string(self):
+        assert CURRENCIES.USD < CURRENCIES.EUR.value
+        assert CURRENCIES.USD <= CURRENCIES.EUR.value
+        assert CURRENCIES.USD.value < CURRENCIES.EUR
+        assert CURRENCIES.EUR.value <= CURRENCIES.EUR
+
+    def test_cannot_compare_to_other_objects(self):
+        with self.assertRaises(TypeError):
+            assert CURRENCIES.USD < 100
+        with self.assertRaises(TypeError):
+            assert CURRENCIES.USD >= 1
+
+    def test_cannot_compare_to_non_currency_strings(self):
+        with self.assertRaises(TypeError):
+            assert CURRENCIES.USD < "FOO"
+        with self.assertRaises(TypeError):
+            assert CURRENCIES.USD >= "BAR"
+
+    def test_greater_than_currency(self):
+        assert CURRENCIES.EUR > CURRENCIES.USD
+        assert CURRENCIES.EUR >= CURRENCIES.EUR
+
+    def test_greater_than_string(self):
+        assert CURRENCIES.EUR.value > CURRENCIES.USD
+        assert CURRENCIES.EUR.value >= CURRENCIES.USD
+        assert CURRENCIES.EUR > CURRENCIES.USD.value
+        assert CURRENCIES.EUR >= CURRENCIES.EUR.value

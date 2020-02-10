@@ -1,4 +1,4 @@
-from origin_common.constants.base import Constant, Constants
+from origin_common.constants.base import Constant, Constants, add_sorting_functions
 
 
 class PaymentFrequency(Constant[int]):
@@ -14,3 +14,4 @@ class PaymentFrequencies(Constants):
 
 PAYMENT_FREQUENCIES = PaymentFrequencies()
 PAYMENT_FREQUENCIES.make_immutable()
+add_sorting_functions(PaymentFrequency, PAYMENT_FREQUENCIES)

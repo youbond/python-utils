@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from origin_common.constants.adjustments import ADJUSTMENTS, Adjustment
-from origin_common.constants.base import Constant, Constants
+from origin_common.constants.base import Constant, Constants, add_sorting_functions
 from origin_common.constants.business_day_conventions import (
     BUSINESS_DAY_CONVENTIONS,
     BusinessDayConvention,
@@ -882,3 +882,4 @@ MTN_FUNDING_BASES.make_immutable()
 CD_FUNDING_BASES = CDFundingBases()
 CD_FUNDING_BASES.make_immutable()
 FUNDING_BASES = MTN_FUNDING_BASES
+add_sorting_functions(FundingBasis, FUNDING_BASES)

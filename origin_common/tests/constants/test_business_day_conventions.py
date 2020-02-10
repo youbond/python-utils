@@ -2,15 +2,6 @@ from unittest import TestCase
 
 from origin_common.constants import BUSINESS_DAY_CONVENTIONS
 
-BUSINESS_DAY_CONVENTION_MODIFIED_FOLLOWING = "Modified Following"
-BUSINESS_DAY_CONVENTION_FOLLOWING = "Following"
-BUSINESS_DAY_CONVENTION_PRECEDING = "Preceding"
-BUSINESS_DAY_CONVENTION_OPTIONS = [
-    BUSINESS_DAY_CONVENTION_MODIFIED_FOLLOWING,
-    BUSINESS_DAY_CONVENTION_FOLLOWING,
-    BUSINESS_DAY_CONVENTION_PRECEDING,
-]
-
 
 class TestBusinessDayConventionValues(TestCase):
     def test_following(self):
@@ -78,3 +69,73 @@ class TestBusinessDayConventionOrder(TestCase):
             ),
         )
         assert BUSINESS_DAY_CONVENTIONS.to_django_choices() == expected
+
+
+class TestBusinessDayConventionComparisons(TestCase):
+    def test_less_than_business_day_convention(self):
+        assert (
+            BUSINESS_DAY_CONVENTIONS.FOLLOWING
+            < BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+        )
+        assert (
+            BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+            <= BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+        )
+
+    def test_less_than_string(self):
+        assert (
+            BUSINESS_DAY_CONVENTIONS.FOLLOWING
+            < BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING.value
+        )
+        assert (
+            BUSINESS_DAY_CONVENTIONS.FOLLOWING
+            <= BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING.value
+        )
+        assert (
+            BUSINESS_DAY_CONVENTIONS.FOLLOWING.value
+            < BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+        )
+        assert (
+            BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING.value
+            <= BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+        )
+
+    def test_cannot_compare_to_other_objects(self):
+        with self.assertRaises(TypeError):
+            assert BUSINESS_DAY_CONVENTIONS.FOLLOWING < 100
+        with self.assertRaises(TypeError):
+            assert BUSINESS_DAY_CONVENTIONS.FOLLOWING >= 1
+
+    def test_cannot_compare_to_non_business_day_convention_strings(self):
+        with self.assertRaises(TypeError):
+            assert BUSINESS_DAY_CONVENTIONS.FOLLOWING < "FOO"
+        with self.assertRaises(TypeError):
+            assert BUSINESS_DAY_CONVENTIONS.FOLLOWING >= "BAR"
+
+    def test_greater_than_business_day_convention(self):
+        assert (
+            BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+            > BUSINESS_DAY_CONVENTIONS.FOLLOWING
+        )
+        assert (
+            BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+            >= BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+        )
+
+    def test_greater_than_string(self):
+        assert (
+            BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING.value
+            > BUSINESS_DAY_CONVENTIONS.FOLLOWING
+        )
+        assert (
+            BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING.value
+            >= BUSINESS_DAY_CONVENTIONS.FOLLOWING
+        )
+        assert (
+            BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+            > BUSINESS_DAY_CONVENTIONS.FOLLOWING.value
+        )
+        assert (
+            BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING
+            >= BUSINESS_DAY_CONVENTIONS.MODIFIED_PRECEDING.value
+        )
