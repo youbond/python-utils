@@ -26,6 +26,16 @@ class TestChoiceField(TestCase):
         assert serializer.is_valid()
         assert serializer.validated_data["foo"] == dummy_choices.c1
 
+    def test_validation_accepts_constant(self):
+        dummy_choices = DummyChoices()
+
+        class Serializer(serializers.Serializer):
+            foo = ChoiceField(choices=dummy_choices)
+
+        serializer = Serializer(data={"foo": dummy_choices.c1})
+        assert serializer.is_valid()
+        assert serializer.validated_data["foo"] == dummy_choices.c1
+
     def test_returns_constant_in_representation(self):
         dummy_choices = DummyChoices()
 
@@ -93,6 +103,16 @@ class TestMultipleChoiceField(TestCase):
             foo = MultipleChoiceField(choices=dummy_choices)
 
         serializer = Serializer(data={"foo": [1, 2]})
+        assert serializer.is_valid()
+        assert serializer.validated_data["foo"] == {dummy_choices.c1, dummy_choices.c2}
+
+    def test_validation_accepts_constant(self):
+        dummy_choices = DummyChoices()
+
+        class Serializer(serializers.Serializer):
+            foo = MultipleChoiceField(choices=dummy_choices)
+
+        serializer = Serializer(data={"foo": [dummy_choices.c1, dummy_choices.c2]})
         assert serializer.is_valid()
         assert serializer.validated_data["foo"] == {dummy_choices.c1, dummy_choices.c2}
 
