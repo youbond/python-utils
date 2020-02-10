@@ -117,7 +117,10 @@ class Constant(Generic[T], ImmutableMixin):
         return f"<{self.__class__.__name__}: {self} at {hex(id(self))}>"
 
     def __eq__(self, other):
-        return hash(self) == hash(other)
+        try:
+            return hash(self) == hash(other)
+        except TypeError:
+            return False
 
     def __hash__(self) -> int:
         return hash(self.value)
