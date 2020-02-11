@@ -1,11 +1,9 @@
 from datetime import timedelta
 from random import choice
-from unittest import TestCase
 
-import django
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.test import TestCase
 
 from origin_common.constants import (
     ADJUSTMENTS,
@@ -27,10 +25,28 @@ from origin_common.constants.django.model_fields import (
     PaymentFrequencyField,
     TenorField,
 )
-
+# connection = psycopg2.connect("user=resley password='catsrgr8' dbname=postgres")
+# cursor = connection.cursor()
+# cursor.execute("CREATE DATABASE testdb;")
+# atexit.register(lambda: cursor.execute("DROP DATABASE testdb;"))
 # needed to create models
-settings.configure()
-django.setup()
+# settings.configure(DATABASES={
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "testdb",
+#         # "USER": "gitlab",
+#         # "PASSWORD": "gitlabpwd",
+#         # "HOST": "postgres",
+#     },
+# },MIGRATION_MODULES = {
+#         # This lets us skip creating migrations for the test models as many of
+#         # them depend on one of the following contrib applications.
+#         'auth': None,
+#         'contenttypes': None,
+#         'sessions': None,
+#     })
+# django.setup()
+from origin_common.tests.constants.django.models import TestModel
 
 
 class ConstantFieldTestBase:
@@ -39,18 +55,20 @@ class ConstantFieldTestBase:
     base_type: type = None
     base_model_field: type(models.Field) = None
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        super().setUpClass()
-        assert cls.field_cls is not None, "Set field class"
-
-        class TestModel(models.Model):
-            foo = cls.field_cls()
-
-            class Meta:
-                app_label = "test"
-
-        cls.TestModel = TestModel
+    # @classmethod
+    # @isolate_apps("test")
+    # def setUpClass(cls) -> None:
+    #     super().setUpClass()
+    #     assert cls.field_cls is not None, "Set field class"
+    #
+    #     class TestModel(models.Model):
+    #         foo = cls.field_cls()
+    #         array = ArrayField(cls.field_cls(), default=list)
+    #
+    #         class Meta:
+    #             app_label = "test"
+    #
+    #     cls.TestModel = TestModel
 
     def setUp(self) -> None:
         super().setUp()
@@ -106,27 +124,47 @@ class ConstantFieldTestBase:
         name, path, args, kwargs = self.field.deconstruct()
         assert kwargs["choices"] == list(choices)
 
+    def get_model_field_name(self):
+        return self.field_cls.__name__.replace("Field", "").lower()
+
     def test_get_foo_display_works_with_value(self):
         constant = choice(list(self.constants))
-        instance = self.TestModel(foo=constant.value)
-        assert instance.get_foo_display() == constant.label
+        field_name = self.get_model_field_name()
+        instance = TestModel(**{field_name: constant.value})
+        display_func = getattr(instance, f"get_{field_name}_display")
+        assert display_func() == constant.label
 
     def test_get_foo_display_works_with_actual_constant(self):
         constant = choice(list(self.constants))
-        instance = self.TestModel(foo=constant)
-        assert instance.get_foo_display() == constant.label
+        field_name = self.get_model_field_name()
+        instance = TestModel(**{field_name: constant})
+        display_func = getattr(instance, f"get_{field_name}_display")
+        assert display_func() == constant.label
 
     def test_attributes(self):
         constant = choice(list(self.constants))
-        instance = self.TestModel(foo=constant.value)
-        assert isinstance(instance.foo, self.field_cls.attr_class)
-        assert isinstance(self.TestModel.foo, self.field_cls.descriptor_class)
+        field_name = self.get_model_field_name()
+        instance = TestModel(**{field_name: constant.value})
+        assert isinstance(getattr(instance, field_name), self.field_cls.attr_class)
+        assert isinstance(
+            getattr(TestModel, field_name), self.field_cls.descriptor_class
+        )
 
     def test_blank_and_nullable_values(self):
-        instance = self.TestModel(foo="")
-        assert instance.foo == ""
-        instance = self.TestModel(foo=None)
-        assert instance.foo is None
+        field_name = self.get_model_field_name()
+        instance = TestModel(**{field_name: ""})
+        assert getattr(instance, field_name) == ""
+        instance = TestModel(**{field_name: None})
+        assert getattr(instance, field_name) is None
+
+    def test_can_use_constant_in_lookups(self):
+        constant = choice(list(self.constants))
+        manager = TestModel.objects
+        field_name = self.get_model_field_name()
+        assert not manager.filter(**{field_name: constant}).exists()
+        assert not manager.filter(
+            **{f"{field_name}_array__overlaps": [constant]}
+        ).exists()
 
 
 class TestAdjustmentField(ConstantFieldTestBase, TestCase):
