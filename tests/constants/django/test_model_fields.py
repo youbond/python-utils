@@ -46,7 +46,7 @@ from origin_common.constants.django.model_fields import (
 #         'sessions': None,
 #     })
 # django.setup()
-from origin_common.tests.constants.django.models import TestModel
+from tests.models import TestModel
 
 
 class ConstantFieldTestBase:
@@ -161,9 +161,10 @@ class ConstantFieldTestBase:
         constant = choice(list(self.constants))
         manager = TestModel.objects
         field_name = self.get_model_field_name()
-        assert not manager.filter(**{field_name: constant}).exists()
-        assert not manager.filter(
-            **{f"{field_name}_array__overlaps": [constant]}
+        TestModel(**{field_name: constant, f"{field_name}_array": [constant]}).save()
+        assert manager.filter(**{field_name: constant}).exists()
+        assert manager.filter(
+            **{f"{field_name}_array__overlap": [constant]}
         ).exists()
 
 

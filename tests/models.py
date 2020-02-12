@@ -27,6 +27,3 @@ class TestModel(models.Model):
     paymentfrequency_array = ArrayField(PaymentFrequencyField(), default=list)
     tenor = TenorField(null=True, blank=True)
     tenor_array = ArrayField(TenorField(), default=list)
-
-    class Meta:
-        app_label = "test"
