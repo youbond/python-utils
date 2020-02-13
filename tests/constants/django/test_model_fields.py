@@ -25,27 +25,6 @@ from origin_common.constants.django.model_fields import (
     PaymentFrequencyField,
     TenorField,
 )
-# connection = psycopg2.connect("user=resley password='catsrgr8' dbname=postgres")
-# cursor = connection.cursor()
-# cursor.execute("CREATE DATABASE testdb;")
-# atexit.register(lambda: cursor.execute("DROP DATABASE testdb;"))
-# needed to create models
-# settings.configure(DATABASES={
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "testdb",
-#         # "USER": "gitlab",
-#         # "PASSWORD": "gitlabpwd",
-#         # "HOST": "postgres",
-#     },
-# },MIGRATION_MODULES = {
-#         # This lets us skip creating migrations for the test models as many of
-#         # them depend on one of the following contrib applications.
-#         'auth': None,
-#         'contenttypes': None,
-#         'sessions': None,
-#     })
-# django.setup()
 from tests.models import TestModel
 
 
@@ -54,21 +33,6 @@ class ConstantFieldTestBase:
     constants: Constants = None
     base_type: type = None
     base_model_field: type(models.Field) = None
-
-    # @classmethod
-    # @isolate_apps("test")
-    # def setUpClass(cls) -> None:
-    #     super().setUpClass()
-    #     assert cls.field_cls is not None, "Set field class"
-    #
-    #     class TestModel(models.Model):
-    #         foo = cls.field_cls()
-    #         array = ArrayField(cls.field_cls(), default=list)
-    #
-    #         class Meta:
-    #             app_label = "test"
-    #
-    #     cls.TestModel = TestModel
 
     def setUp(self) -> None:
         super().setUp()
