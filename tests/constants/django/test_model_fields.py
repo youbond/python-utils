@@ -163,9 +163,7 @@ class ConstantFieldTestBase:
         field_name = self.get_model_field_name()
         TestModel(**{field_name: constant, f"{field_name}_array": [constant]}).save()
         assert manager.filter(**{field_name: constant}).exists()
-        assert manager.filter(
-            **{f"{field_name}_array__overlap": [constant]}
-        ).exists()
+        assert manager.filter(**{f"{field_name}_array__overlap": [constant]}).exists()
 
 
 class TestAdjustmentField(ConstantFieldTestBase, TestCase):

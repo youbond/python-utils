@@ -1,15 +1,14 @@
-SECRET_KEY = 'fake-key'
+SECRET_KEY = "fake-key"
 INSTALLED_APPS = [
     "origin_common",
     "tests",
 ]
-DATABASES={
+DATABASES = {
     "default": {
-        # "ENGINE": "django.db.backends.sqlite3",
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "testdb",
-        # "USER": "gitlab",
-        # "PASSWORD": "gitlabpwd",
-        # "HOST": "postgres",
+        "USER": "gitlab",
+        "PASSWORD": "gitlabpwd",
+        "HOST": "postgres",
     },
 }
