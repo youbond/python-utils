@@ -1,4 +1,4 @@
-from origin_common.constants.base import Constant, Constants
+from origin_common.constants.base import Constant, Constants, add_sorting_functions
 
 
 class BusinessDayConvention(Constant[str]):
@@ -18,3 +18,4 @@ class BusinessDayConventions(Constants):
 
 BUSINESS_DAY_CONVENTIONS = BusinessDayConventions()
 BUSINESS_DAY_CONVENTIONS.make_immutable()
+add_sorting_functions(BusinessDayConvention, BUSINESS_DAY_CONVENTIONS)

@@ -1,6 +1,6 @@
 from typing import Tuple, Union
 
-from origin_common.constants.base import Constant, Constants
+from origin_common.constants.base import Constant, Constants, add_sorting_functions
 
 
 class Currency(Constant[str]):
@@ -253,3 +253,4 @@ class Currencies(Constants[Currency]):
 
 
 CURRENCIES = Currencies()
+add_sorting_functions(Currency, CURRENCIES)

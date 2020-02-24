@@ -117,7 +117,10 @@ class Constant(Generic[T], ImmutableMixin):
         return f"<{self.__class__.__name__}: {self} at {hex(id(self))}>"
 
     def __eq__(self, other):
-        return hash(self) == hash(other)
+        try:
+            return hash(self) == hash(other)
+        except TypeError:
+            return False
 
     def __hash__(self) -> int:
         return hash(self.value)
@@ -217,6 +220,35 @@ class Constants(Generic[C], ImmutableMixin):
 
     def to_json(self):
         return [o.to_json() for o in self]
+
+
+def add_sorting_functions(
+    constant_cls: type(Constant), constants_iterable: Constants
+) -> None:
+    def get_compare_value(other) -> Constant:
+        try:
+            return constants_iterable[other]
+        except KeyError:
+            raise TypeError(
+                f"Cannot compare instances of '{constant_cls.__name__}' and '{type(other).__name__}'"
+            )
+
+    def __lt__(self, other):
+        return self._creation_counter < get_compare_value(other)._creation_counter
+
+    def __le__(self, other):
+        return self._creation_counter <= get_compare_value(other)._creation_counter
+
+    def __gt__(self, other):
+        return self._creation_counter > get_compare_value(other)._creation_counter
+
+    def __ge__(self, other):
+        return self._creation_counter >= get_compare_value(other)._creation_counter
+
+    constant_cls.__lt__ = __lt__
+    constant_cls.__le__ = __le__
+    constant_cls.__gt__ = __gt__
+    constant_cls.__ge__ = __ge__
 
 
 def encode_default(self, obj):

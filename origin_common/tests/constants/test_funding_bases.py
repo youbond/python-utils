@@ -1383,3 +1383,37 @@ class TestCDFundingBasesOrder(TestCase):
             for basis in sorted(CD_FUNDING_BASES, key=lambda x: x.sorting)
         )
         assert CD_FUNDING_BASES.to_django_choices() == expected
+
+
+class TestFundingBasisComparisons(TestCase):
+    def test_less_than_funding_basis(self):
+        assert FUNDING_BASES.EUR_3M < FUNDING_BASES.JPY_FIXED
+        assert FUNDING_BASES.JPY_FIXED <= FUNDING_BASES.JPY_FIXED
+
+    def test_less_than_string(self):
+        assert FUNDING_BASES.EUR_3M < FUNDING_BASES.JPY_FIXED.value
+        assert FUNDING_BASES.EUR_3M <= FUNDING_BASES.JPY_FIXED.value
+        assert FUNDING_BASES.EUR_3M.value < FUNDING_BASES.JPY_FIXED
+        assert FUNDING_BASES.JPY_FIXED.value <= FUNDING_BASES.JPY_FIXED
+
+    def test_cannot_compare_to_other_objects(self):
+        with self.assertRaises(TypeError):
+            assert FUNDING_BASES.EUR_3M < 100
+        with self.assertRaises(TypeError):
+            assert FUNDING_BASES.EUR_3M >= 1
+
+    def test_cannot_compare_to_non_funding_basis_strings(self):
+        with self.assertRaises(TypeError):
+            assert FUNDING_BASES.EUR_3M < "FOO"
+        with self.assertRaises(TypeError):
+            assert FUNDING_BASES.EUR_3M >= "BAR"
+
+    def test_greater_than_funding_basis(self):
+        assert FUNDING_BASES.JPY_FIXED > FUNDING_BASES.EUR_3M
+        assert FUNDING_BASES.JPY_FIXED >= FUNDING_BASES.JPY_FIXED
+
+    def test_greater_than_string(self):
+        assert FUNDING_BASES.JPY_FIXED.value > FUNDING_BASES.EUR_3M
+        assert FUNDING_BASES.JPY_FIXED.value >= FUNDING_BASES.EUR_3M
+        assert FUNDING_BASES.JPY_FIXED > FUNDING_BASES.EUR_3M.value
+        assert FUNDING_BASES.JPY_FIXED >= FUNDING_BASES.JPY_FIXED.value
