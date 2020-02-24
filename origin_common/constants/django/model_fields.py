@@ -79,6 +79,9 @@ class ConstantField(models.Field):
     def get_internal_type(self) -> str:
         return self.type_mappings[self.base_type].__name__
 
+    def from_db_value(self, value, expression, connection):
+        return self.to_python(value)
+
     def to_python(self, value: Union[None, base_type]) -> Union[Constant, None]:
         try:
             constant = self.constants[value]

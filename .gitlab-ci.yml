@@ -1,5 +1,13 @@
 image: python:3.8
 
+services:
+  - postgres:9.5
+
+variables:
+  POSTGRES_DB: testdb
+  POSTGRES_USER: gitlab
+  POSTGRES_PASSWORD: gitlabpwd
+
 stages:
 - test
 
@@ -28,7 +36,3 @@ black:
 isort:
   stage: test
   script: tox -e isort
-
-coverage:
-  stage: test
-  script: tox -e coverage

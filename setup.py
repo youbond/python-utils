@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="origin_common",
-    version="0.0.4",
+    version="0.0.5",
     description="Common util functions and mixins to make development "
     "of other projects easier.",
     url="https://git.originmarkets.com/originmarkets/origin-common",

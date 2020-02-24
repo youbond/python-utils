@@ -1,4 +1,6 @@
 [run]
 omit = */test*, manage.py, */migrations/*, */management/commands/*, .tox/*
 [report]
-fail_under=80
+precision=3
+fail_under=80.00
+show_missing=True
