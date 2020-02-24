@@ -152,148 +152,294 @@ class TestDayCountValues(TestCase):
 
 class TestDayCountLabels(TestCase):
     def test_aed_label(self):
-        assert CURRENCIES.AED.label == "UAE Dirham (AED)"
+        assert CURRENCIES.AED.label == "AED"
 
     def test_amd_label(self):
-        assert CURRENCIES.AMD.label == "Armenian Dram (AMD)"
+        assert CURRENCIES.AMD.label == "AMD"
 
     def test_ars_label(self):
-        assert CURRENCIES.ARS.label == "Argentine Peso (ARS)"
+        assert CURRENCIES.ARS.label == "ARS"
 
     def test_aud_label(self):
-        assert CURRENCIES.AUD.label == "Australian Dollar (AUD)"
+        assert CURRENCIES.AUD.label == "AUD"
 
     def test_brl_label(self):
-        assert CURRENCIES.BRL.label == "Brazilian Real (BRL)"
+        assert CURRENCIES.BRL.label == "BRL"
 
     def test_cad_label(self):
-        assert CURRENCIES.CAD.label == "Canadian Dollar (CAD)"
+        assert CURRENCIES.CAD.label == "CAD"
 
     def test_chf_label(self):
-        assert CURRENCIES.CHF.label == "Swiss Franc (CHF)"
+        assert CURRENCIES.CHF.label == "CHF"
 
     def test_clp_label(self):
-        assert CURRENCIES.CLP.label == "Chilean peso (CLP)"
+        assert CURRENCIES.CLP.label == "CLP"
 
     def test_cnh_label(self):
-        assert CURRENCIES.CNH.label == "Yuan Renminbi (Offshore) (CNH)"
+        assert CURRENCIES.CNH.label == "CNH"
 
     def test_cny_label(self):
-        assert CURRENCIES.CNY.label == "Yuan Renminbi (CNY)"
+        assert CURRENCIES.CNY.label == "CNY"
 
     def test_cop_label(self):
-        assert CURRENCIES.COP.label == "Colombian peso (COP)"
+        assert CURRENCIES.COP.label == "COP"
 
     def test_czk_label(self):
-        assert CURRENCIES.CZK.label == "Czech Koruna (CZK)"
+        assert CURRENCIES.CZK.label == "CZK"
 
     def test_dkk_label(self):
-        assert CURRENCIES.DKK.label == "Danish Krone (DKK)"
+        assert CURRENCIES.DKK.label == "DKK"
 
     def test_eur_label(self):
-        assert CURRENCIES.EUR.label == "Euro (EUR)"
+        assert CURRENCIES.EUR.label == "EUR"
 
     def test_eek_label(self):
-        assert CURRENCIES.EEK.label == "Estonian Kroon (EEK)"
+        assert CURRENCIES.EEK.label == "EEK"
 
     def test_gbp_label(self):
-        assert CURRENCIES.GBP.label == "Pound Sterling (GBP)"
+        assert CURRENCIES.GBP.label == "GBP"
 
     def test_gel_label(self):
-        assert CURRENCIES.GEL.label == "Lari (GEL)"
+        assert CURRENCIES.GEL.label == "GEL"
 
     def test_hkd_label(self):
-        assert CURRENCIES.HKD.label == "Hong Kong Dollar (HKD)"
+        assert CURRENCIES.HKD.label == "HKD"
 
     def test_huf_label(self):
-        assert CURRENCIES.HUF.label == "Forint (HUF)"
+        assert CURRENCIES.HUF.label == "HUF"
 
     def test_idr_label(self):
-        assert CURRENCIES.IDR.label == "Rupiah (IDR)"
+        assert CURRENCIES.IDR.label == "IDR"
 
     def test_inr_label(self):
-        assert CURRENCIES.INR.label == "Indian Rupee (INR)"
+        assert CURRENCIES.INR.label == "INR"
 
     def test_isk_label(self):
-        assert CURRENCIES.ISK.label == "Iceland Krona (ISK)"
+        assert CURRENCIES.ISK.label == "ISK"
 
     def test_jpy_label(self):
-        assert CURRENCIES.JPY.label == "Yen (JPY)"
+        assert CURRENCIES.JPY.label == "JPY"
 
     def test_kgs_label(self):
-        assert CURRENCIES.KGS.label == "Som (KGS)"
+        assert CURRENCIES.KGS.label == "KGS"
 
     def test_krw_label(self):
-        assert CURRENCIES.KRW.label == "Won (KRW)"
+        assert CURRENCIES.KRW.label == "KRW"
 
     def test_kzt_label(self):
-        assert CURRENCIES.KZT.label == "Tenge (KZT)"
+        assert CURRENCIES.KZT.label == "KZT"
 
     def test_mxn_label(self):
-        assert CURRENCIES.MXN.label == "Mexican peso (MXN)"
+        assert CURRENCIES.MXN.label == "MXN"
 
     def test_myr_label(self):
-        assert CURRENCIES.MYR.label == "Malaysian Ringgit (MYR)"
+        assert CURRENCIES.MYR.label == "MYR"
 
     def test_nok_label(self):
-        assert CURRENCIES.NOK.label == "Norwegian Krone (NOK)"
+        assert CURRENCIES.NOK.label == "NOK"
 
     def test_nzd_label(self):
-        assert CURRENCIES.NZD.label == "New Zealand Dollar (NZD)"
+        assert CURRENCIES.NZD.label == "NZD"
 
     def test_ntd_label(self):
-        assert CURRENCIES.NTD.label == "New Taiwan dollar (NTD)"
+        assert CURRENCIES.NTD.label == "NTD"
 
     def test_pen_label(self):
-        assert CURRENCIES.PEN.label == "Peruvian Sol (PEN)"
+        assert CURRENCIES.PEN.label == "PEN"
 
     def test_php_label(self):
-        assert CURRENCIES.PHP.label == "Philippine Peso (PHP)"
+        assert CURRENCIES.PHP.label == "PHP"
 
     def test_pln_label(self):
-        assert CURRENCIES.PLN.label == "Zloty (PLN)"
+        assert CURRENCIES.PLN.label == "PLN"
 
     def test_qar_label(self):
-        assert CURRENCIES.QAR.label == "Qatari Rial (QAR)"
+        assert CURRENCIES.QAR.label == "QAR"
 
     def test_ron_label(self):
-        assert CURRENCIES.RON.label == "Romanian Leu (RON)"
+        assert CURRENCIES.RON.label == "RON"
 
     def test_rsd_label(self):
-        assert CURRENCIES.RSD.label == "Serbian Dinar (RSD)"
+        assert CURRENCIES.RSD.label == "RSD"
 
     def test_rub_label(self):
-        assert CURRENCIES.RUB.label == "Russian Ruble (RUB)"
+        assert CURRENCIES.RUB.label == "RUB"
 
     def test_sek_label(self):
-        assert CURRENCIES.SEK.label == "Swedish Krona (SEK)"
+        assert CURRENCIES.SEK.label == "SEK"
 
     def test_sgd_label(self):
-        assert CURRENCIES.SGD.label == "Singapore Dollar (SGD)"
+        assert CURRENCIES.SGD.label == "SGD"
 
     def test_skk_label(self):
-        assert CURRENCIES.SKK.label == "Slovak Koruna (SKK)"
+        assert CURRENCIES.SKK.label == "SKK"
 
     def test_try_label(self):
-        assert CURRENCIES.TRY.label == "Turkish Lira (TRY)"
+        assert CURRENCIES.TRY.label == "TRY"
 
     def test_uah_label(self):
-        assert CURRENCIES.UAH.label == "Hryvnia (UAH)"
+        assert CURRENCIES.UAH.label == "UAH"
 
     def test_usd_label(self):
-        assert CURRENCIES.USD.label == "US Dollar (USD)"
+        assert CURRENCIES.USD.label == "USD"
 
     def test_uyu_label(self):
-        assert CURRENCIES.UYU.label == "Uruguayan peso (UYU)"
+        assert CURRENCIES.UYU.label == "UYU"
 
     def test_vnd_label(self):
-        assert CURRENCIES.VND.label == "Dong (VND)"
+        assert CURRENCIES.VND.label == "VND"
 
     def test_zar_label(self):
-        assert CURRENCIES.ZAR.label == "Rand (ZAR)"
+        assert CURRENCIES.ZAR.label == "ZAR"
 
     def test_zmk_label(self):
-        assert CURRENCIES.ZMK.label == "Zambian Kwacha (ZMK)"
+        assert CURRENCIES.ZMK.label == "ZMK"
+
+
+class TestDayCountNames(TestCase):
+    def test_aed_name(self):
+        assert CURRENCIES.AED.name == "UAE Dirham (AED)"
+
+    def test_amd_name(self):
+        assert CURRENCIES.AMD.name == "Armenian Dram (AMD)"
+
+    def test_ars_name(self):
+        assert CURRENCIES.ARS.name == "Argentine Peso (ARS)"
+
+    def test_aud_name(self):
+        assert CURRENCIES.AUD.name == "Australian Dollar (AUD)"
+
+    def test_brl_name(self):
+        assert CURRENCIES.BRL.name == "Brazilian Real (BRL)"
+
+    def test_cad_name(self):
+        assert CURRENCIES.CAD.name == "Canadian Dollar (CAD)"
+
+    def test_chf_name(self):
+        assert CURRENCIES.CHF.name == "Swiss Franc (CHF)"
+
+    def test_clp_name(self):
+        assert CURRENCIES.CLP.name == "Chilean peso (CLP)"
+
+    def test_cnh_name(self):
+        assert CURRENCIES.CNH.name == "Yuan Renminbi (Offshore) (CNH)"
+
+    def test_cny_name(self):
+        assert CURRENCIES.CNY.name == "Yuan Renminbi (CNY)"
+
+    def test_cop_name(self):
+        assert CURRENCIES.COP.name == "Colombian peso (COP)"
+
+    def test_czk_name(self):
+        assert CURRENCIES.CZK.name == "Czech Koruna (CZK)"
+
+    def test_dkk_name(self):
+        assert CURRENCIES.DKK.name == "Danish Krone (DKK)"
+
+    def test_eur_name(self):
+        assert CURRENCIES.EUR.name == "Euro (EUR)"
+
+    def test_eek_name(self):
+        assert CURRENCIES.EEK.name == "Estonian Kroon (EEK)"
+
+    def test_gbp_name(self):
+        assert CURRENCIES.GBP.name == "Pound Sterling (GBP)"
+
+    def test_gel_name(self):
+        assert CURRENCIES.GEL.name == "Lari (GEL)"
+
+    def test_hkd_name(self):
+        assert CURRENCIES.HKD.name == "Hong Kong Dollar (HKD)"
+
+    def test_huf_name(self):
+        assert CURRENCIES.HUF.name == "Forint (HUF)"
+
+    def test_idr_name(self):
+        assert CURRENCIES.IDR.name == "Rupiah (IDR)"
+
+    def test_inr_name(self):
+        assert CURRENCIES.INR.name == "Indian Rupee (INR)"
+
+    def test_isk_name(self):
+        assert CURRENCIES.ISK.name == "Iceland Krona (ISK)"
+
+    def test_jpy_name(self):
+        assert CURRENCIES.JPY.name == "Yen (JPY)"
+
+    def test_kgs_name(self):
+        assert CURRENCIES.KGS.name == "Som (KGS)"
+
+    def test_krw_name(self):
+        assert CURRENCIES.KRW.name == "Won (KRW)"
+
+    def test_kzt_name(self):
+        assert CURRENCIES.KZT.name == "Tenge (KZT)"
+
+    def test_mxn_name(self):
+        assert CURRENCIES.MXN.name == "Mexican peso (MXN)"
+
+    def test_myr_name(self):
+        assert CURRENCIES.MYR.name == "Malaysian Ringgit (MYR)"
+
+    def test_nok_name(self):
+        assert CURRENCIES.NOK.name == "Norwegian Krone (NOK)"
+
+    def test_nzd_name(self):
+        assert CURRENCIES.NZD.name == "New Zealand Dollar (NZD)"
+
+    def test_ntd_name(self):
+        assert CURRENCIES.NTD.name == "New Taiwan dollar (NTD)"
+
+    def test_pen_name(self):
+        assert CURRENCIES.PEN.name == "Peruvian Sol (PEN)"
+
+    def test_php_name(self):
+        assert CURRENCIES.PHP.name == "Philippine Peso (PHP)"
+
+    def test_pln_name(self):
+        assert CURRENCIES.PLN.name == "Zloty (PLN)"
+
+    def test_qar_name(self):
+        assert CURRENCIES.QAR.name == "Qatari Rial (QAR)"
+
+    def test_ron_name(self):
+        assert CURRENCIES.RON.name == "Romanian Leu (RON)"
+
+    def test_rsd_name(self):
+        assert CURRENCIES.RSD.name == "Serbian Dinar (RSD)"
+
+    def test_rub_name(self):
+        assert CURRENCIES.RUB.name == "Russian Ruble (RUB)"
+
+    def test_sek_name(self):
+        assert CURRENCIES.SEK.name == "Swedish Krona (SEK)"
+
+    def test_sgd_name(self):
+        assert CURRENCIES.SGD.name == "Singapore Dollar (SGD)"
+
+    def test_skk_name(self):
+        assert CURRENCIES.SKK.name == "Slovak Koruna (SKK)"
+
+    def test_try_name(self):
+        assert CURRENCIES.TRY.name == "Turkish Lira (TRY)"
+
+    def test_uah_name(self):
+        assert CURRENCIES.UAH.name == "Hryvnia (UAH)"
+
+    def test_usd_name(self):
+        assert CURRENCIES.USD.name == "US Dollar (USD)"
+
+    def test_uyu_name(self):
+        assert CURRENCIES.UYU.name == "Uruguayan peso (UYU)"
+
+    def test_vnd_name(self):
+        assert CURRENCIES.VND.name == "Dong (VND)"
+
+    def test_zar_name(self):
+        assert CURRENCIES.ZAR.name == "Rand (ZAR)"
+
+    def test_zmk_name(self):
+        assert CURRENCIES.ZMK.name == "Zambian Kwacha (ZMK)"
 
 
 class TestDayCountSymbols(TestCase):
@@ -574,3 +720,47 @@ class TestCurrencyCode(TestCase):
     def test_code_is_alias_for_value(self):
         constant = choice(list(CURRENCIES))
         assert constant.code == constant.value
+
+
+class TestCurrenciesGetName(TestCase):
+    def test_returns_name_of_given_currency_constant(self):
+        constant = choice(list(CURRENCIES))
+        assert CURRENCIES.get_name(constant) == constant.name
+
+    def test_returns_name_of_given_currency_value(self):
+        constant = choice(list(CURRENCIES))
+        assert CURRENCIES.get_name(constant.value) == constant.name
+
+
+class TestCurrencyComparisons(TestCase):
+    def test_less_than_currency(self):
+        assert CURRENCIES.USD < CURRENCIES.EUR
+        assert CURRENCIES.EUR <= CURRENCIES.EUR
+
+    def test_less_than_string(self):
+        assert CURRENCIES.USD < CURRENCIES.EUR.value
+        assert CURRENCIES.USD <= CURRENCIES.EUR.value
+        assert CURRENCIES.USD.value < CURRENCIES.EUR
+        assert CURRENCIES.EUR.value <= CURRENCIES.EUR
+
+    def test_cannot_compare_to_other_objects(self):
+        with self.assertRaises(TypeError):
+            assert CURRENCIES.USD < 100
+        with self.assertRaises(TypeError):
+            assert CURRENCIES.USD >= 1
+
+    def test_cannot_compare_to_non_currency_strings(self):
+        with self.assertRaises(TypeError):
+            assert CURRENCIES.USD < "FOO"
+        with self.assertRaises(TypeError):
+            assert CURRENCIES.USD >= "BAR"
+
+    def test_greater_than_currency(self):
+        assert CURRENCIES.EUR > CURRENCIES.USD
+        assert CURRENCIES.EUR >= CURRENCIES.EUR
+
+    def test_greater_than_string(self):
+        assert CURRENCIES.EUR.value > CURRENCIES.USD
+        assert CURRENCIES.EUR.value >= CURRENCIES.USD
+        assert CURRENCIES.EUR > CURRENCIES.USD.value
+        assert CURRENCIES.EUR >= CURRENCIES.EUR.value

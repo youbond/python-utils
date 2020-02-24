@@ -57,3 +57,37 @@ class TestDayCountOrder(TestCase):
             (DAY_COUNTS.ACTUAL_365_NL.value, DAY_COUNTS.ACTUAL_365_NL.label),
         )
         assert DAY_COUNTS.to_django_choices() == expected
+
+
+class TestDayCountComparisons(TestCase):
+    def test_less_than_day_count(self):
+        assert DAY_COUNTS.ACTUAL_ACTUAL_ICMA < DAY_COUNTS.ACTUAL_365_NL
+        assert DAY_COUNTS.ACTUAL_365_NL <= DAY_COUNTS.ACTUAL_365_NL
+
+    def test_less_than_string(self):
+        assert DAY_COUNTS.ACTUAL_ACTUAL_ICMA < DAY_COUNTS.ACTUAL_365_NL.value
+        assert DAY_COUNTS.ACTUAL_ACTUAL_ICMA <= DAY_COUNTS.ACTUAL_365_NL.value
+        assert DAY_COUNTS.ACTUAL_ACTUAL_ICMA.value < DAY_COUNTS.ACTUAL_365_NL
+        assert DAY_COUNTS.ACTUAL_365_NL.value <= DAY_COUNTS.ACTUAL_365_NL
+
+    def test_cannot_compare_to_other_objects(self):
+        with self.assertRaises(TypeError):
+            assert DAY_COUNTS.ACTUAL_ACTUAL_ICMA < 100
+        with self.assertRaises(TypeError):
+            assert DAY_COUNTS.ACTUAL_ACTUAL_ICMA >= 1
+
+    def test_cannot_compare_to_non_day_count_strings(self):
+        with self.assertRaises(TypeError):
+            assert DAY_COUNTS.ACTUAL_ACTUAL_ICMA < "FOO"
+        with self.assertRaises(TypeError):
+            assert DAY_COUNTS.ACTUAL_ACTUAL_ICMA >= "BAR"
+
+    def test_greater_than_day_count(self):
+        assert DAY_COUNTS.ACTUAL_365_NL > DAY_COUNTS.ACTUAL_ACTUAL_ICMA
+        assert DAY_COUNTS.ACTUAL_365_NL >= DAY_COUNTS.ACTUAL_365_NL
+
+    def test_greater_than_string(self):
+        assert DAY_COUNTS.ACTUAL_365_NL.value > DAY_COUNTS.ACTUAL_ACTUAL_ICMA
+        assert DAY_COUNTS.ACTUAL_365_NL.value >= DAY_COUNTS.ACTUAL_ACTUAL_ICMA
+        assert DAY_COUNTS.ACTUAL_365_NL > DAY_COUNTS.ACTUAL_ACTUAL_ICMA.value
+        assert DAY_COUNTS.ACTUAL_365_NL >= DAY_COUNTS.ACTUAL_365_NL.value

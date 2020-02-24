@@ -1,4 +1,4 @@
-from origin_common.constants.base import Constant, Constants
+from origin_common.constants.base import Constant, Constants, add_sorting_functions
 
 
 class DayCount(Constant[str]):
@@ -15,3 +15,4 @@ class DayCounts(Constants):
 
 DAY_COUNTS = DayCounts()
 DAY_COUNTS.make_immutable()
+add_sorting_functions(DayCount, DAY_COUNTS)

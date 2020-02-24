@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from origin_common.constants.adjustments import ADJUSTMENTS, Adjustment
-from origin_common.constants.base import Constant, Constants
+from origin_common.constants.base import Constant, Constants, add_sorting_functions
 from origin_common.constants.business_day_conventions import (
     BUSINESS_DAY_CONVENTIONS,
     BusinessDayConvention,
@@ -94,10 +94,10 @@ class FixedFundingBasis(FundingBasis):
         pricing: bool = True,
         legal_label: str = None,
     ):
-        value = "FIXED_{}".format(currency.value)
-        label = "{} Fixed".format(currency.value)
+        value = f"FIXED_{currency.value}"
+        label = f"{currency.value} Fixed"
         if not legal_label:
-            legal_label = "Fixed Rate {}".format(currency.value)
+            legal_label = f"Fixed Rate {currency.value}"
         super().__init__(
             value,
             label,
@@ -132,8 +132,8 @@ class MSFundingBasis(FundingBasis):
         business_day_convention: BusinessDayConvention = None,
         pricing: bool = True,
     ):
-        value = "MS_{}".format(currency.value)
-        label = "{} M/S".format(currency.value)
+        value = f"MS_{currency.value}"
+        label = f"{currency.value} M/S"
         super().__init__(
             value,
             label,
@@ -882,3 +882,4 @@ MTN_FUNDING_BASES.make_immutable()
 CD_FUNDING_BASES = CDFundingBases()
 CD_FUNDING_BASES.make_immutable()
 FUNDING_BASES = MTN_FUNDING_BASES
+add_sorting_functions(FundingBasis, FUNDING_BASES)

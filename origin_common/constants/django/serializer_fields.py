@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from origin_common.constants.base import Constants
+from origin_common.constants.base import Constant, Constants
 
 
 class ConstantChoiceMixin:
@@ -27,6 +27,13 @@ class ConstantChoiceMixin:
             # remap so that it returns constants instead of the value
             for key, value in self.choice_strings_to_values.items():
                 self.choice_strings_to_values[key] = constant_choices[value]
+
+    def to_internal_value(self, data):
+        if isinstance(data, Constant):
+            data = data.value
+        if not isinstance(data, str) and hasattr(data, "__iter__"):
+            data = [d.value if isinstance(d, Constant) else d for d in data]
+        return super().to_internal_value(data)
 
 
 class ChoiceField(ConstantChoiceMixin, serializers.ChoiceField):

@@ -1,4 +1,4 @@
-from origin_common.constants.base import Constant, Constants
+from origin_common.constants.base import Constant, Constants, add_sorting_functions
 
 
 class Adjustment(Constant[str]):
@@ -13,3 +13,4 @@ class Adjustments(Constants):
 
 ADJUSTMENTS = Adjustments()
 ADJUSTMENTS.make_immutable()
+add_sorting_functions(Adjustment, ADJUSTMENTS)

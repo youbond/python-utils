@@ -30,6 +30,13 @@ class TestConstant(TestCase):
         assert const == const
         assert const == 123
 
+    def test_not_equal_to_non_hashable_types(self):
+        const = Constant(value=123, label="Foo")
+        # comparing does not throw an error
+        assert const != []
+        assert const != set()
+        assert const != {}
+
     def test_can_be_made_immutable(self):
         const = Constant(value=123, label="Foo")
         const.make_immutable()
@@ -244,3 +251,12 @@ class TestPerformOnConstant(TestCase):
         c1 = Constant(3, "foo")
         operation = perform_on_constant(pow)
         assert operation(c1, 3, 4) == 3
+
+
+class TestJsonDumps(TestCase):
+    def test_original_function_still_works_for_non_constants(self):
+        class Foo:
+            pass
+
+        with self.assertRaises(TypeError):
+            json.dumps(Foo())
