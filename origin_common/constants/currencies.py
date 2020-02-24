@@ -6,7 +6,7 @@ from origin_common.constants.base import Constant, Constants, add_sorting_functi
 class Currency(Constant[str]):
     def __init__(self, value: str, name: str, symbol: str = None, is_g10=False):
         super().__init__(value, value)
-        self.name = "{} ({})".format(name, value)
+        self.name = f"{name} ({value})"
         if symbol is None:
             symbol = value
         self.symbol = symbol
