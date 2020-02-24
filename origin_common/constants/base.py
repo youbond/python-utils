@@ -229,10 +229,9 @@ def add_sorting_functions(
         try:
             return constants_iterable[other]
         except KeyError:
-            pass
-        raise TypeError(
-            f"Cannot compare instances of '{constant_cls.__name__}' and '{type(other).__name__}'"
-        )
+            raise TypeError(
+                f"Cannot compare instances of '{constant_cls.__name__}' and '{type(other).__name__}'"
+            )
 
     def __lt__(self, other):
         return self._creation_counter < get_compare_value(other)._creation_counter
