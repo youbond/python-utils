@@ -1,10 +1,10 @@
 from random import choice
 from unittest import TestCase
 
-from origin_common.constants import CURRENCIES, DAY_COUNTS
+from origin_common.constants import CURRENCIES
 
 
-class TestDayCountValues(TestCase):
+class TestCurrencyValues(TestCase):
     def test_aed_value(self):
         assert CURRENCIES.AED.value == "AED"
 
@@ -150,7 +150,7 @@ class TestDayCountValues(TestCase):
         assert CURRENCIES.ZMK.value == "ZMK"
 
 
-class TestDayCountLabels(TestCase):
+class TestCurrencyLabels(TestCase):
     def test_aed_label(self):
         assert CURRENCIES.AED.label == "AED"
 
@@ -296,7 +296,7 @@ class TestDayCountLabels(TestCase):
         assert CURRENCIES.ZMK.label == "ZMK"
 
 
-class TestDayCountNames(TestCase):
+class TestCurrencyNames(TestCase):
     def test_aed_name(self):
         assert CURRENCIES.AED.name == "UAE Dirham (AED)"
 
@@ -442,7 +442,7 @@ class TestDayCountNames(TestCase):
         assert CURRENCIES.ZMK.name == "Zambian Kwacha (ZMK)"
 
 
-class TestDayCountSymbols(TestCase):
+class TestCurrencySymbols(TestCase):
     def test_aed_symbol(self):
         assert CURRENCIES.AED.symbol == "AED"
 
