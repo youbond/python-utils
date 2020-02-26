@@ -101,6 +101,9 @@ class ConstantField(models.Field):
             return value.value
         return value
 
+    def value_from_object(self, obj):
+        return super().value_from_object(obj).value
+
     def contribute_to_class(self, cls, name, private_only=False):
         super().contribute_to_class(cls, name, private_only)
         setattr(cls, self.name, self.descriptor_class(self))

@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.forms import modelform_factory
 from django.test import TestCase
 
 from origin_common.constants import (
@@ -135,6 +136,14 @@ class ConstantFieldTestBase:
         TestModel(**{field_name: constant, f"{field_name}_array": [constant]}).save()
         assert manager.filter(**{field_name: constant}).exists()
         assert manager.filter(**{f"{field_name}_array__overlap": [constant]}).exists()
+
+    def test_form_initial_value(self):
+        constant = choice(list(self.constants))
+        field_name = self.get_model_field_name()
+        instance = TestModel(**{field_name: constant})
+        form_cls = modelform_factory(TestModel, fields=[field_name])
+        form = form_cls(instance=instance)
+        assert form.initial[field_name] == constant.value
 
 
 class TestAdjustmentField(ConstantFieldTestBase, TestCase):
