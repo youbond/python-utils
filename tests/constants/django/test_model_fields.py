@@ -1,8 +1,10 @@
 from datetime import timedelta
 from random import choice
+from unittest.mock import Mock, patch
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.forms import modelform_factory
 from django.test import TestCase
 
 from origin_common.constants import (
@@ -67,6 +69,12 @@ class ConstantFieldTestBase:
         with self.assertRaises(ValidationError, msg=msg):
             self.field.to_python(value)
 
+    def test_from_db_value_calls_to_python(self):
+        value = Mock()
+        with patch.object(self.field, "to_python") as mocked_to_python:
+            self.field.from_db_value(value, expression=None, connection=None)
+            mocked_to_python.assert_called_once_with(value)
+
     def test_get_prep_value_when_value_is_none(self):
         assert self.field.get_prep_value(None) is None
 
@@ -128,6 +136,14 @@ class ConstantFieldTestBase:
         TestModel(**{field_name: constant, f"{field_name}_array": [constant]}).save()
         assert manager.filter(**{field_name: constant}).exists()
         assert manager.filter(**{f"{field_name}_array__overlap": [constant]}).exists()
+
+    def test_form_initial_value(self):
+        constant = choice(list(self.constants))
+        field_name = self.get_model_field_name()
+        instance = TestModel(**{field_name: constant})
+        form_cls = modelform_factory(TestModel, fields=[field_name])
+        form = form_cls(instance=instance)
+        assert form.initial[field_name] == constant.value
 
 
 class TestAdjustmentField(ConstantFieldTestBase, TestCase):
