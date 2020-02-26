@@ -140,9 +140,12 @@ class ConstantFieldTestBase:
     def test_form_initial_value(self):
         constant = choice(list(self.constants))
         field_name = self.get_model_field_name()
-        instance = TestModel(**{field_name: constant})
+        instance_with_constant = TestModel(**{field_name: constant})
+        instance_with_value = TestModel(**{field_name: constant.value})
         form_cls = modelform_factory(TestModel, fields=[field_name])
-        form = form_cls(instance=instance)
+        form = form_cls(instance=instance_with_constant)
+        assert form.initial[field_name] == constant.value
+        form = form_cls(instance=instance_with_value)
         assert form.initial[field_name] == constant.value
 
 

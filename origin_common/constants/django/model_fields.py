@@ -102,7 +102,10 @@ class ConstantField(models.Field):
         return value
 
     def value_from_object(self, obj):
-        return super().value_from_object(obj).value
+        value = super().value_from_object(obj)
+        if isinstance(value, Constant):
+            return value.value
+        return value
 
     def contribute_to_class(self, cls, name, private_only=False):
         super().contribute_to_class(cls, name, private_only)
