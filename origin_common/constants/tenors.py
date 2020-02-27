@@ -70,6 +70,9 @@ class Tenor(Constant[timedelta]):
     def to_json(self):
         return self.label
 
+    def total_seconds(self):
+        return self.value.total_seconds()
+
 
 class Tenors(Constants[Tenor]):
     OVERNIGHT = Tenor(timedelta(days=1), "O/N", "#665241")
