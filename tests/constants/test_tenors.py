@@ -1107,3 +1107,9 @@ class TestTenorArithmetic(TestCase):
         self.assertRaises(TypeError, lambda: 0.0 / a)
         self.assertRaises(ZeroDivisionError, lambda: a // 0)
         self.assertRaises(ZeroDivisionError, lambda: a / 0.0)
+
+
+class TestTenorFunctions(TestCase):
+    def test_can_call_total_seconds(self):
+        tenor = choice(list(TENORS))
+        assert tenor.total_seconds() == tenor.value.total_seconds()

@@ -1,6 +1,8 @@
 from datetime import timedelta
+from random import choice
 from unittest import TestCase
 
+from origin_common.constants import TENORS
 from origin_common.utils import (
     DAYS_IN_A_MONTH,
     DAYS_IN_A_WEEK,
@@ -262,3 +264,7 @@ class TestTimedeltaToString(TestCase):
             t, round_ndigits=3, only_quarter_years=False
         )
         assert timedelta_string == "10.234Y"
+
+    def test_works_with_tenors(self):
+        tenor = choice(list(TENORS))
+        assert timedelta_to_string(tenor) == tenor.label
