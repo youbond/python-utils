@@ -1,6 +1,5 @@
 from datetime import timedelta
 from random import choice
-from unittest.mock import Mock, patch
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -68,12 +67,6 @@ class ConstantFieldTestBase:
         msg = f"Invalid input: '{value}' is not a valid constant."
         with self.assertRaises(ValidationError, msg=msg):
             self.field.to_python(value)
-
-    def test_from_db_value_calls_to_python(self):
-        value = Mock()
-        with patch.object(self.field, "to_python") as mocked_to_python:
-            self.field.from_db_value(value, expression=None, connection=None)
-            mocked_to_python.assert_called_once_with(value)
 
     def test_get_prep_value_when_value_is_none(self):
         assert self.field.get_prep_value(None) is None
