@@ -16,6 +16,16 @@ class DummyChoices(Constants):
 
 
 class TestChoiceField(TestCase):
+    def test_indexed_by_label(self):
+        dummy_choices = DummyChoices()
+
+        class Serializer(serializers.Serializer):
+            foo = ChoiceField(choices=dummy_choices, label_indexed=True)
+
+        serializer = Serializer(data={"foo": "bar"})
+        assert serializer.is_valid()
+        assert serializer.validated_data["foo"] == dummy_choices.c2
+
     def test_returns_constant_during_validation(self):
         dummy_choices = DummyChoices()
 
@@ -96,6 +106,16 @@ class TestChoiceField(TestCase):
 
 
 class TestMultipleChoiceField(TestCase):
+    def test_indexed_by_label(self):
+        dummy_choices = DummyChoices()
+
+        class Serializer(serializers.Serializer):
+            foo = MultipleChoiceField(choices=dummy_choices, label_indexed=True)
+
+        serializer = Serializer(data={"foo": ["bar", "baz"]})
+        assert serializer.is_valid()
+        assert serializer.validated_data["foo"] == {dummy_choices.c2, dummy_choices.c3}
+
     def test_returns_constant_during_validation(self):
         dummy_choices = DummyChoices()
 

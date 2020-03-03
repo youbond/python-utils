@@ -1,6 +1,7 @@
 from collections import OrderedDict
+from functools import lru_cache
 from json import JSONEncoder
-from typing import Any, Callable, Dict, Generator, Generic, Set, Tuple, TypeVar, Union
+from typing import Any, Callable, Dict, Generator, Generic, Tuple, TypeVar, Union
 
 T = TypeVar("T")
 
@@ -184,6 +185,7 @@ class Constants(Generic[C], ImmutableMixin):
             self._ordered_fields[counter] = value
         super().__setattr__(key, value)
 
+    @lru_cache()
     def to_django_choices(self) -> Tuple[Tuple[T, str]]:
         return tuple((attr.value, attr.label) for attr in self)
 
@@ -218,7 +220,14 @@ class Constants(Generic[C], ImmutableMixin):
         for constant in self:
             constant.make_immutable()
 
+    @lru_cache()
     def to_json(self):
+        """
+        Called when you do `json.dumps` with constants. The return value is
+        cached as constants are immutable.
+
+        If the constant is modified make sure to clear the lru cache.
+        """
         return [o.to_json() for o in self]
 
 

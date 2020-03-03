@@ -1,16 +1,26 @@
+from functools import lru_cache
 from typing import Tuple, Union
 
 from origin_common.constants.base import Constant, Constants, add_sorting_functions
+from origin_common.constants.calendars import CALENDARS, Calendar
 
 
 class Currency(Constant[str]):
-    def __init__(self, value: str, name: str, symbol: str = None, is_g10=False):
+    def __init__(
+        self,
+        value: str,
+        name: str,
+        symbol: str = None,
+        is_g10=False,
+        related_calendars: Tuple[Calendar, ...] = None,
+    ):
         super().__init__(value, value)
         self.name = f"{name} ({value})"
         if symbol is None:
             symbol = value
         self.symbol = symbol
         self.is_g10 = is_g10
+        self.related_calendars = tuple(related_calendars or [])
 
     @property
     def code(self):
@@ -19,56 +29,88 @@ class Currency(Constant[str]):
 
 
 class Currencies(Constants[Currency]):
-    USD = Currency(value="USD", name="US Dollar", symbol="$", is_g10=True,)
-    EUR = Currency(value="EUR", name="Euro", symbol="€", is_g10=True,)
-    GBP = Currency(value="GBP", name="Pound Sterling", symbol="£", is_g10=True,)
-    JPY = Currency(value="JPY", name="Yen", symbol="¥", is_g10=True,)
+    USD = Currency(
+        value="USD",
+        name="US Dollar",
+        symbol="$",
+        is_g10=True,
+        related_calendars=(CALENDARS.NEW_YORK,),
+    )
+    EUR = Currency(
+        value="EUR",
+        name="Euro",
+        symbol="€",
+        is_g10=True,
+        related_calendars=(CALENDARS.TARGET2,),
+    )
+    GBP = Currency(
+        value="GBP",
+        name="Pound Sterling",
+        symbol="£",
+        is_g10=True,
+        related_calendars=(CALENDARS.LONDON,),
+    )
+    JPY = Currency(
+        value="JPY",
+        name="Yen",
+        symbol="¥",
+        is_g10=True,
+        related_calendars=(CALENDARS.TOKYO,),
+    )
     CHF = Currency(
         value="CHF",
         name="Swiss Franc",
         # symbol="₣",
         is_g10=True,
+        related_calendars=(CALENDARS.ZURICH,),
     )
     AUD = Currency(
         value="AUD",
         name="Australian Dollar",
         # symbol="$",
         is_g10=True,
+        related_calendars=(CALENDARS.SYDNEY,),
     )
     NZD = Currency(
         value="NZD",
         name="New Zealand Dollar",
         # symbol="$",
         is_g10=True,
+        related_calendars=(CALENDARS.AUCKLAND, CALENDARS.WELLINGTON),
     )
     CAD = Currency(
         value="CAD",
         name="Canadian Dollar",
         # symbol="$",
         is_g10=True,
+        related_calendars=(CALENDARS.TORONTO,),
     )
     SEK = Currency(
         value="SEK",
         name="Swedish Krona",
         # symbol="kr",
         is_g10=True,
+        related_calendars=(CALENDARS.STOCKHOLM,),
     )
     NOK = Currency(
         value="NOK",
         name="Norwegian Krone",
         # symbol="kr",
         is_g10=True,
+        related_calendars=(CALENDARS.OSLO,),
     )
 
     HKD = Currency(
         value="HKD",
         name="Hong Kong Dollar",
         # symbol="$",
+        related_calendars=(CALENDARS.HONG_KONG,),
     )
     AED = Currency(
         value="AED",
         name="UAE Dirham",
         # symbol="د.إ",
+        related_calendars=(CALENDARS.DUBAI,),
     )
     AMD = Currency(
         value="AMD",
@@ -94,11 +136,13 @@ class Currencies(Constants[Currency]):
         value="CNH",  # same as CNY
         name="Yuan Renminbi (Offshore)",
         # symbol="¥",
+        related_calendars=(CALENDARS.BEIJING,),
     )
     CNY = Currency(
         value="CNY",
         name="Yuan Renminbi",
         # symbol="¥",
+        related_calendars=(CALENDARS.SHANGHAI,),
     )
     COP = Currency(
         value="COP",
@@ -109,11 +153,13 @@ class Currencies(Constants[Currency]):
         value="CZK",
         name="Czech Koruna",
         # symbol="Kč",
+        related_calendars=(CALENDARS.PRAGUE,),
     )
     DKK = Currency(
         value="DKK",
         name="Danish Krone",
         # symbol="kr",
+        related_calendars=(CALENDARS.COPENHAGEN,),
     )
     EEK = Currency(
         value="EEK",
@@ -144,9 +190,12 @@ class Currencies(Constants[Currency]):
         value="ISK",
         name="Iceland Krona",
         # symbol="Kr",
+        related_calendars=(CALENDARS.REYKJAVIK,),
     )
     KGS = Currency(value="KGS", name="Som",)
-    KRW = Currency(value="KRW", name="Won", symbol="₩",)
+    KRW = Currency(
+        value="KRW", name="Won", symbol="₩", related_calendars=(CALENDARS.SEOUL,),
+    )
     KZT = Currency(
         value="KZT",
         name="Tenge",
@@ -181,16 +230,19 @@ class Currencies(Constants[Currency]):
         value="PLN",
         name="Zloty",
         # symbol="zł",
+        related_calendars=(CALENDARS.WARSAW,),
     )
     QAR = Currency(
         value="QAR",
         name="Qatari Rial",
         # symbol="ر.ق",
+        related_calendars=(CALENDARS.DOHA,),
     )
     RON = Currency(
         value="RON",
         name="Romanian Leu",
         # symbol="L",
+        related_calendars=(CALENDARS.BUCHAREST,),
     )
     RSD = Currency(
         value="RSD",
@@ -201,11 +253,13 @@ class Currencies(Constants[Currency]):
         value="RUB",
         name="Russian Ruble",
         # symbol="р.",
+        related_calendars=(CALENDARS.MOSCOW,),
     )
     SGD = Currency(
         value="SGD",
         name="Singapore Dollar",
         # symbol="$",
+        related_calendars=(CALENDARS.SINGAPORE,),
     )
     SKK = Currency(
         value="SKK",
@@ -216,6 +270,7 @@ class Currencies(Constants[Currency]):
         value="TRY",
         name="Turkish Lira",
         # symbol="₤",
+        related_calendars=(CALENDARS.ISTANBUL,),
     )
     UAH = Currency(
         value="UAH",
@@ -236,6 +291,7 @@ class Currencies(Constants[Currency]):
         value="ZAR",
         name="Rand",
         # symbol="R",
+        related_calendars=(CALENDARS.JOHANNESBURG,),
     )
     ZMK = Currency(
         value="ZMK",  # real one is ZMW
@@ -243,6 +299,7 @@ class Currencies(Constants[Currency]):
         # symbol="K",
     )
 
+    @lru_cache()
     def to_django_choices(self, only_g10=False) -> Tuple[Tuple[str, str]]:
         if only_g10:
             return tuple((attr.value, attr.label) for attr in self if attr.is_g10)

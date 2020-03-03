@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from origin_common.better_test_mixins import LruCacheTestMixin
 from origin_common.constants import ADJUSTMENTS
 
 
@@ -19,7 +20,7 @@ class TestAdjustmentLabels(TestCase):
         assert ADJUSTMENTS.UNADJUSTED.label == "Unadjusted"
 
 
-class TestAdjustmentOrder(TestCase):
+class TestAdjustmentOrder(LruCacheTestMixin, TestCase):
     def test_order(self):
         expected = [
             ADJUSTMENTS.ADJUSTED,
@@ -33,6 +34,7 @@ class TestAdjustmentOrder(TestCase):
             (ADJUSTMENTS.UNADJUSTED.value, ADJUSTMENTS.UNADJUSTED.label),
         )
         assert ADJUSTMENTS.to_django_choices() == expected
+        self.assert_has_lru_cache(ADJUSTMENTS.to_django_choices)
 
 
 class TestAdjustmentComparisons(TestCase):

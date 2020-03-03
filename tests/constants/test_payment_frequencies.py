@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from origin_common.better_test_mixins import LruCacheTestMixin
 from origin_common.constants import PAYMENT_FREQUENCIES
 
 
@@ -31,7 +32,7 @@ class TestPaymentFrequencyLabels(TestCase):
         assert PAYMENT_FREQUENCIES.AT_MATURITY.label == "At Maturity"
 
 
-class TestPaymentFrequencyOrder(TestCase):
+class TestPaymentFrequencyOrder(LruCacheTestMixin, TestCase):
     def test_order(self):
         expected = [
             PAYMENT_FREQUENCIES.AT_MATURITY,
@@ -50,6 +51,7 @@ class TestPaymentFrequencyOrder(TestCase):
             (pf.ANNUALLY.value, pf.ANNUALLY.label),
         )
         assert pf.to_django_choices() == expected
+        self.assert_has_lru_cache(pf.to_django_choices)
 
 
 class TestPaymentFrequencyComparisons(TestCase):

@@ -3,6 +3,7 @@ import operator
 from datetime import date
 from unittest import TestCase
 
+from origin_common.better_test_mixins import LruCacheTestMixin
 from origin_common.constants.base import (
     Constant,
     Constants,
@@ -74,7 +75,7 @@ class TestConstant(TestCase):
         assert f"{const:,.2}" == f"{value:,.2}"
 
 
-class TestConstants(TestCase):
+class TestConstants(LruCacheTestMixin, TestCase):
     def test_is_singleton(self):
         class Dummy1(Constants):
             pass
@@ -198,6 +199,7 @@ class TestConstants(TestCase):
 
         dummy = Dummy()
         assert json.dumps(dummy) == json.dumps([c.value for c in dummy])
+        self.assert_has_lru_cache(dummy.to_json)
 
     def test_cannot_have_duplicate_values(self):
         class Dummy(Constants):

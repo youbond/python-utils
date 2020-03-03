@@ -1,7 +1,8 @@
 from random import choice
 from unittest import TestCase
 
-from origin_common.constants import CURRENCIES
+from origin_common.better_test_mixins import LruCacheTestMixin
+from origin_common.constants import CALENDARS, CURRENCIES
 
 
 class TestCurrencyValues(TestCase):
@@ -588,7 +589,156 @@ class TestCurrencySymbols(TestCase):
         assert CURRENCIES.ZMK.symbol == "ZMK"
 
 
-class TestCurrenciesOrder(TestCase):
+class TestCurrencyRelatedCalendars(TestCase):
+    def test_aed_related_calendars(self):
+        assert CURRENCIES.AED.related_calendars == (CALENDARS.DUBAI,)
+
+    def test_amd_related_calendars(self):
+        assert CURRENCIES.AMD.related_calendars == tuple()
+
+    def test_ars_related_calendars(self):
+        assert CURRENCIES.ARS.related_calendars == tuple()
+
+    def test_aud_related_calendars(self):
+        assert CURRENCIES.AUD.related_calendars == (CALENDARS.SYDNEY,)
+
+    def test_brl_related_calendars(self):
+        assert CURRENCIES.BRL.related_calendars == tuple()
+
+    def test_cad_related_calendars(self):
+        assert CURRENCIES.CAD.related_calendars == (CALENDARS.TORONTO,)
+
+    def test_chf_related_calendars(self):
+        assert CURRENCIES.CHF.related_calendars == (CALENDARS.ZURICH,)
+
+    def test_clp_related_calendars(self):
+        assert CURRENCIES.CLP.related_calendars == tuple()
+
+    def test_cnh_related_calendars(self):
+        assert CURRENCIES.CNH.related_calendars == (CALENDARS.BEIJING,)
+
+    def test_cny_related_calendars(self):
+        assert CURRENCIES.CNY.related_calendars == (CALENDARS.SHANGHAI,)
+
+    def test_cop_related_calendars(self):
+        assert CURRENCIES.COP.related_calendars == tuple()
+
+    def test_czk_related_calendars(self):
+        assert CURRENCIES.CZK.related_calendars == (CALENDARS.PRAGUE,)
+
+    def test_dkk_related_calendars(self):
+        assert CURRENCIES.DKK.related_calendars == (CALENDARS.COPENHAGEN,)
+
+    def test_eur_related_calendars(self):
+        assert CURRENCIES.EUR.related_calendars == (CALENDARS.TARGET2,)
+
+    def test_eek_related_calendars(self):
+        assert CURRENCIES.EEK.related_calendars == tuple()
+
+    def test_gbp_related_calendars(self):
+        assert CURRENCIES.GBP.related_calendars == (CALENDARS.LONDON,)
+
+    def test_gel_related_calendars(self):
+        assert CURRENCIES.GEL.related_calendars == tuple()
+
+    def test_hkd_related_calendars(self):
+        assert CURRENCIES.HKD.related_calendars == (CALENDARS.HONG_KONG,)
+
+    def test_huf_related_calendars(self):
+        assert CURRENCIES.HUF.related_calendars == tuple()
+
+    def test_idr_related_calendars(self):
+        assert CURRENCIES.IDR.related_calendars == tuple()
+
+    def test_inr_related_calendars(self):
+        assert CURRENCIES.INR.related_calendars == tuple()
+
+    def test_isk_related_calendars(self):
+        assert CURRENCIES.ISK.related_calendars == (CALENDARS.REYKJAVIK,)
+
+    def test_jpy_related_calendars(self):
+        assert CURRENCIES.JPY.related_calendars == (CALENDARS.TOKYO,)
+
+    def test_kgs_related_calendars(self):
+        assert CURRENCIES.KGS.related_calendars == tuple()
+
+    def test_krw_related_calendars(self):
+        assert CURRENCIES.KRW.related_calendars == (CALENDARS.SEOUL,)
+
+    def test_kzt_related_calendars(self):
+        assert CURRENCIES.KZT.related_calendars == tuple()
+
+    def test_mxn_related_calendars(self):
+        assert CURRENCIES.MXN.related_calendars == tuple()
+
+    def test_myr_related_calendars(self):
+        assert CURRENCIES.MYR.related_calendars == tuple()
+
+    def test_nok_related_calendars(self):
+        assert CURRENCIES.NOK.related_calendars == (CALENDARS.OSLO,)
+
+    def test_nzd_related_calendars(self):
+        assert CURRENCIES.NZD.related_calendars == (
+            CALENDARS.AUCKLAND,
+            CALENDARS.WELLINGTON,
+        )
+
+    def test_ntd_related_calendars(self):
+        assert CURRENCIES.NTD.related_calendars == tuple()
+
+    def test_pen_related_calendars(self):
+        assert CURRENCIES.PEN.related_calendars == tuple()
+
+    def test_php_related_calendars(self):
+        assert CURRENCIES.PHP.related_calendars == tuple()
+
+    def test_pln_related_calendars(self):
+        assert CURRENCIES.PLN.related_calendars == (CALENDARS.WARSAW,)
+
+    def test_qar_related_calendars(self):
+        assert CURRENCIES.QAR.related_calendars == (CALENDARS.DOHA,)
+
+    def test_ron_related_calendars(self):
+        assert CURRENCIES.RON.related_calendars == (CALENDARS.BUCHAREST,)
+
+    def test_rsd_related_calendars(self):
+        assert CURRENCIES.RSD.related_calendars == tuple()
+
+    def test_rub_related_calendars(self):
+        assert CURRENCIES.RUB.related_calendars == (CALENDARS.MOSCOW,)
+
+    def test_sek_related_calendars(self):
+        assert CURRENCIES.SEK.related_calendars == (CALENDARS.STOCKHOLM,)
+
+    def test_sgd_related_calendars(self):
+        assert CURRENCIES.SGD.related_calendars == (CALENDARS.SINGAPORE,)
+
+    def test_skk_related_calendars(self):
+        assert CURRENCIES.SKK.related_calendars == tuple()
+
+    def test_try_related_calendars(self):
+        assert CURRENCIES.TRY.related_calendars == (CALENDARS.ISTANBUL,)
+
+    def test_uah_related_calendars(self):
+        assert CURRENCIES.UAH.related_calendars == tuple()
+
+    def test_usd_related_calendars(self):
+        assert CURRENCIES.USD.related_calendars == (CALENDARS.NEW_YORK,)
+
+    def test_uyu_related_calendars(self):
+        assert CURRENCIES.UYU.related_calendars == tuple()
+
+    def test_vnd_related_calendars(self):
+        assert CURRENCIES.VND.related_calendars == tuple()
+
+    def test_zar_related_calendars(self):
+        assert CURRENCIES.ZAR.related_calendars == (CALENDARS.JOHANNESBURG,)
+
+    def test_zmk_related_calendars(self):
+        assert CURRENCIES.ZMK.related_calendars == tuple()
+
+
+class TestCurrenciesOrder(LruCacheTestMixin, TestCase):
     def test_order(self):
         expected = [
             # G10
@@ -698,6 +848,7 @@ class TestCurrenciesOrder(TestCase):
             (CURRENCIES.ZMK.value, CURRENCIES.ZMK.label),
         )
         assert CURRENCIES.to_django_choices() == expected
+        self.assert_has_lru_cache(CURRENCIES.to_django_choices)
 
     def test_django_choices_only_g10(self):
         expected = (
@@ -714,6 +865,7 @@ class TestCurrenciesOrder(TestCase):
             (CURRENCIES.NOK.value, CURRENCIES.NOK.label),
         )
         assert CURRENCIES.to_django_choices(only_g10=True) == expected
+        self.assert_has_lru_cache(CURRENCIES.to_django_choices)
 
 
 class TestCurrencyCode(TestCase):

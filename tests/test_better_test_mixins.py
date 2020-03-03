@@ -1,6 +1,7 @@
+from functools import lru_cache
 from unittest import TestCase
 
-from origin_common.better_test_mixins import SerializerTestMixin
+from origin_common.better_test_mixins import LruCacheTestMixin, SerializerTestMixin
 
 
 class Field:
@@ -72,3 +73,19 @@ class TestSerializerTestMixin(TestCase):
         dummy.test_all_fields_are_tested()
         # see ma... no errors
         dummy.test_field_field()
+
+
+class TestLruCacheTestMixin(LruCacheTestMixin, TestCase):
+    def test_no_error_if_decorated(self):
+        @lru_cache()
+        def func():
+            pass
+
+        self.assert_has_lru_cache(func)
+
+    def test_throws_error_if_not_decorated(self):
+        def func():
+            pass
+
+        with self.assertRaises(AssertionError):
+            self.assert_has_lru_cache(func)
