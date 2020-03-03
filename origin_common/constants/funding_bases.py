@@ -1,4 +1,6 @@
-from typing import Tuple
+from datetime import time
+from functools import lru_cache
+from typing import List, Tuple
 
 from origin_common.constants.adjustments import ADJUSTMENTS, Adjustment
 from origin_common.constants.base import Constant, Constants, add_sorting_functions
@@ -6,6 +8,7 @@ from origin_common.constants.business_day_conventions import (
     BUSINESS_DAY_CONVENTIONS,
     BusinessDayConvention,
 )
+from origin_common.constants.calendars import CALENDARS, Calendar
 from origin_common.constants.currencies import CURRENCIES, Currency
 from origin_common.constants.day_counts import DAY_COUNTS, DayCount
 from origin_common.constants.payment_frequencies import (
@@ -22,6 +25,120 @@ BASIS_TYPE_FIXED = "fixed"
 BASIS_TYPE_FLOATING = "floating"
 
 
+class FixingInfo(Constant[str]):
+    def __init__(
+        self,
+        benchmark_base: str,
+        days_prior_to_fixing: int,
+        fixing_time: time,
+        fixing_location: str,
+        calendar: Calendar,
+    ):
+        super().__init__(benchmark_base, benchmark_base)
+        self.benchmark_base = benchmark_base
+        self.days_prior_to_fixing = days_prior_to_fixing
+        self.fixing_time = fixing_time
+        self.fixing_location = fixing_location
+        self.calendar = calendar
+        self.make_immutable()
+
+
+EURIBOR = FixingInfo(
+    benchmark_base="EURIBOR",
+    days_prior_to_fixing=2,
+    fixing_time=time(hour=11),
+    fixing_location="Brussels",
+    calendar=CALENDARS.TARGET2,
+)
+
+LIBOR_TWO_DAYS = FixingInfo(
+    benchmark_base="LIBOR",
+    days_prior_to_fixing=2,
+    fixing_time=time(hour=11),
+    fixing_location="London",
+    calendar=CALENDARS.LONDON,
+)
+
+LIBOR_ZERO_DAYS = FixingInfo(
+    benchmark_base="LIBOR",
+    days_prior_to_fixing=0,
+    fixing_time=time(hour=11),
+    fixing_location="London",
+    calendar=CALENDARS.LONDON,
+)
+
+SONIA = FixingInfo(
+    benchmark_base="SONIA",
+    days_prior_to_fixing=5,
+    fixing_time=time(hour=9),
+    fixing_location="London",
+    calendar=CALENDARS.LONDON,
+)
+BBSW = FixingInfo(
+    benchmark_base="BBSW",
+    days_prior_to_fixing=0,
+    fixing_time=time(hour=10),
+    fixing_location="Sydney",
+    calendar=CALENDARS.SYDNEY,
+)
+STIBOR = FixingInfo(
+    benchmark_base="STIBOR",
+    days_prior_to_fixing=2,
+    fixing_time=time(hour=11),
+    fixing_location="(CET)",
+    calendar=CALENDARS.STOCKHOLM,
+)
+NIBOR = FixingInfo(
+    benchmark_base="NIBOR",
+    days_prior_to_fixing=2,
+    fixing_time=time(hour=11),
+    fixing_location="(CET)",
+    calendar=CALENDARS.OSLO,
+)
+CAD_BA_CDOR = FixingInfo(
+    benchmark_base="CAD-BA-CDOR",
+    days_prior_to_fixing=0,
+    fixing_time=time(hour=10),
+    fixing_location="Toronto",
+    calendar=CALENDARS.TORONTO,
+)
+BANK_BILL_RATE = FixingInfo(
+    benchmark_base="Bank Bill Rate",
+    days_prior_to_fixing=0,
+    fixing_time=time(hour=11),
+    fixing_location="Auckland",
+    calendar=CALENDARS.AUCKLAND,
+)
+PRIBOR = FixingInfo(
+    benchmark_base="PRIBOR",
+    days_prior_to_fixing=2,
+    fixing_time=time(hour=11),
+    fixing_location="Prague",
+    calendar=CALENDARS.PRAGUE,
+)
+HIBOR = FixingInfo(
+    benchmark_base="HIBOR",
+    days_prior_to_fixing=0,
+    fixing_time=time(hour=11),
+    fixing_location="Hong Kong",
+    calendar=CALENDARS.HONG_KONG,
+)
+SIBOR = FixingInfo(
+    benchmark_base="SIBOR",
+    days_prior_to_fixing=0,
+    fixing_time=time(hour=11),
+    fixing_location="Singapore",
+    calendar=CALENDARS.SINGAPORE,
+)
+JIBAR = FixingInfo(
+    benchmark_base="JIBAR",
+    days_prior_to_fixing=0,
+    fixing_time=time(hour=12),
+    fixing_location="Johannesburg",
+    calendar=CALENDARS.JOHANNESBURG,
+)
+
+
 class FundingBasis(Constant[str]):
     def __init__(
         self,
@@ -34,6 +151,7 @@ class FundingBasis(Constant[str]):
         adjustment: Adjustment = None,
         business_day_convention: BusinessDayConvention = None,
         pricing: bool = True,
+        calendars_for_payment: List[Calendar] = None,
     ):
         super().__init__(value, label)
         self.currency = currency
@@ -43,6 +161,7 @@ class FundingBasis(Constant[str]):
         self.adjustment = adjustment
         self.business_day_convention = business_day_convention
         self.pricing = pricing
+        self.calendars_for_payment = calendars_for_payment or []
         self.is_callable_basis = False
         self.index = 0
         self.basis_type = None  # overridden in child classes
@@ -69,13 +188,22 @@ class FundingBasis(Constant[str]):
 
 
 class FloatingFundingBasis(FundingBasis):
-    def __init__(self, *args, index: int, screen_page: str, legal_label: str, **kwargs):
+    def __init__(
+        self,
+        *args,
+        index: int,
+        screen_page: str,
+        legal_label: str,
+        fixing_info: FixingInfo = None,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.basis_type = BASIS_TYPE_FLOATING
         self.index = index
         self.screen_page = screen_page
         self.is_callable_basis = True
         self.legal_label = legal_label
+        self.fixing_info = fixing_info
 
     @property
     def is_floating_basis(self):
@@ -93,6 +221,7 @@ class FixedFundingBasis(FundingBasis):
         business_day_convention: BusinessDayConvention = None,
         pricing: bool = True,
         legal_label: str = None,
+        calendars_for_payment: List[Calendar] = None,
     ):
         value = f"FIXED_{currency.value}"
         label = f"{currency.value} Fixed"
@@ -108,6 +237,7 @@ class FixedFundingBasis(FundingBasis):
             adjustment,
             business_day_convention,
             pricing,
+            calendars_for_payment,
         )
         self.basis_type = BASIS_TYPE_FIXED
         self.legal_label = legal_label
@@ -131,6 +261,7 @@ class MSFundingBasis(FundingBasis):
         adjustment: Adjustment = None,
         business_day_convention: BusinessDayConvention = None,
         pricing: bool = True,
+        calendars_for_payment: List[Calendar] = None,
     ):
         value = f"MS_{currency.value}"
         label = f"{currency.value} M/S"
@@ -144,6 +275,7 @@ class MSFundingBasis(FundingBasis):
             adjustment,
             business_day_convention,
             pricing,
+            calendars_for_payment,
         )
         self.basis_type = BASIS_TYPE_MS
         self.floating_basis = floating_basis
@@ -180,6 +312,8 @@ class FundingBases(Constants[FundingBasis]):
         legal_label="3 month EURIBOR",
         screen_page="EURIBOR01",
         sorting=0,
+        calendars_for_payment=[CALENDARS.TARGET2],
+        fixing_info=EURIBOR,
     )
     EUR_6M = FloatingFundingBasis(
         value="6M_EUR",
@@ -193,6 +327,8 @@ class FundingBases(Constants[FundingBasis]):
         legal_label="6 month EURIBOR",
         screen_page="EURIBOR01",
         sorting=10,
+        calendars_for_payment=[CALENDARS.TARGET2],
+        fixing_info=EURIBOR,
     )
     EUR_FIXED = FixedFundingBasis(
         currency=CURRENCIES.EUR,
@@ -201,6 +337,7 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
         sorting=20,
+        calendars_for_payment=[CALENDARS.TARGET2],
     )
     EUR_MS = MSFundingBasis(
         currency=CURRENCIES.EUR,
@@ -213,6 +350,7 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         sorting=30,
+        calendars_for_payment=[CALENDARS.TARGET2],
     )
 
     USD_3M = FloatingFundingBasis(
@@ -227,6 +365,8 @@ class FundingBases(Constants[FundingBasis]):
         legal_label="3 month USD LIBOR",
         screen_page="LIBOR01",
         sorting=40,
+        calendars_for_payment=[CALENDARS.LONDON, CALENDARS.NEW_YORK],
+        fixing_info=LIBOR_TWO_DAYS,
     )
     USD_6M = FloatingFundingBasis(
         value="6M_USD",
@@ -240,6 +380,8 @@ class FundingBases(Constants[FundingBasis]):
         legal_label="6 month USD LIBOR",
         screen_page="LIBOR01",
         sorting=50,
+        calendars_for_payment=[CALENDARS.LONDON, CALENDARS.NEW_YORK],
+        fixing_info=LIBOR_TWO_DAYS,
     )
     USD_FIXED = FixedFundingBasis(
         currency=CURRENCIES.USD,
@@ -248,6 +390,7 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
         sorting=60,
+        calendars_for_payment=[CALENDARS.NEW_YORK],
     )
     USD_MS = MSFundingBasis(
         currency=CURRENCIES.USD,
@@ -260,6 +403,7 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         sorting=70,
+        calendars_for_payment=[CALENDARS.LONDON, CALENDARS.NEW_YORK],
     )
 
     GBP_SONIA = FloatingFundingBasis(
@@ -275,6 +419,8 @@ class FundingBases(Constants[FundingBasis]):
         pricing=False,
         legal_label="Compounded Daily SONIA",
         screen_page="SONIA",
+        calendars_for_payment=[CALENDARS.LONDON],
+        fixing_info=SONIA,
     )
     GBP_3M = FloatingFundingBasis(
         value="3M_GBP",
@@ -288,6 +434,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month GBP LIBOR",
         screen_page="LIBOR01",
+        calendars_for_payment=[CALENDARS.LONDON],
+        fixing_info=LIBOR_ZERO_DAYS,
     )
     GBP_6M = FloatingFundingBasis(
         value="6M_GBP",
@@ -301,6 +449,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="6 month GBP LIBOR",
         screen_page="LIBOR01",
+        calendars_for_payment=[CALENDARS.LONDON],
+        fixing_info=LIBOR_ZERO_DAYS,
     )
     GBP_FIXED = FixedFundingBasis(
         currency=CURRENCIES.GBP,
@@ -309,6 +459,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=100,
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
+        calendars_for_payment=[CALENDARS.LONDON],
     )
     GBP_MS = MSFundingBasis(
         currency=CURRENCIES.GBP,
@@ -321,6 +472,7 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         sorting=110,
+        calendars_for_payment=[CALENDARS.LONDON],
     )
     JPY_3M = FloatingFundingBasis(
         value="3M_JPY",
@@ -334,6 +486,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month JPY LIBOR",
         screen_page="LIBOR01",
+        calendars_for_payment=[CALENDARS.LONDON, CALENDARS.TOKYO],
+        fixing_info=LIBOR_TWO_DAYS,
     )
     JPY_6M = FloatingFundingBasis(
         value="6M_JPY",
@@ -347,6 +501,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="6 month JPY LIBOR",
         screen_page="LIBOR01",
+        calendars_for_payment=[CALENDARS.LONDON, CALENDARS.TOKYO],
+        fixing_info=LIBOR_TWO_DAYS,
     )
     JPY_FIXED = FixedFundingBasis(
         currency=CURRENCIES.JPY,
@@ -355,6 +511,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=140,
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.TOKYO],
     )
     JPY_MS = MSFundingBasis(
         currency=CURRENCIES.JPY,
@@ -367,6 +524,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=150,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.LONDON, CALENDARS.TOKYO],
     )
     CHF_3M = FloatingFundingBasis(
         value="3M_CHF",
@@ -380,6 +538,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month CHF LIBOR",
         screen_page="LIBOR01",
+        calendars_for_payment=[CALENDARS.LONDON, CALENDARS.ZURICH],
+        fixing_info=LIBOR_TWO_DAYS,
     )
     CHF_6M = FloatingFundingBasis(
         value="6M_CHF",
@@ -393,6 +553,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="6 month CHF LIBOR",
         screen_page="LIBOR01",
+        calendars_for_payment=[CALENDARS.LONDON, CALENDARS.ZURICH],
+        fixing_info=LIBOR_TWO_DAYS,
     )
     CHF_FIXED = FixedFundingBasis(
         currency=CURRENCIES.CHF,
@@ -401,6 +563,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=180,
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
+        calendars_for_payment=[CALENDARS.ZURICH],
     )
     CHF_MS = MSFundingBasis(
         currency=CURRENCIES.CHF,
@@ -413,6 +576,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=190,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.LONDON, CALENDARS.ZURICH],
     )
     AUD_3M = FloatingFundingBasis(
         value="3M_AUD",
@@ -426,6 +590,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month BBSW",
         screen_page="BBSW",
+        calendars_for_payment=[CALENDARS.SYDNEY],
+        fixing_info=BBSW,
     )
     AUD_6M = FloatingFundingBasis(
         value="6M_AUD",
@@ -439,6 +605,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="6 month BBSW",
         screen_page="BBSW",
+        calendars_for_payment=[CALENDARS.SYDNEY],
+        fixing_info=BBSW,
     )
     AUD_FIXED = FixedFundingBasis(
         currency=CURRENCIES.AUD,
@@ -447,6 +615,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=220,
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.SYDNEY],
     )
     AUD_MS = MSFundingBasis(
         currency=CURRENCIES.AUD,
@@ -459,6 +628,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=230,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.SYDNEY],
     )
     SEK_3M = FloatingFundingBasis(
         value="3M_SEK",
@@ -472,6 +642,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month STIBOR",
         screen_page="SIDE",
+        calendars_for_payment=[CALENDARS.STOCKHOLM],
+        fixing_info=STIBOR,
     )
     SEK_FIXED = FixedFundingBasis(
         currency=CURRENCIES.SEK,
@@ -481,6 +653,7 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
         legal_label="SEK Fixed Rate",
+        calendars_for_payment=[CALENDARS.STOCKHOLM],
     )
     SEK_MS = MSFundingBasis(
         currency=CURRENCIES.SEK,
@@ -493,6 +666,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=260,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.STOCKHOLM],
     )
     NOK_3M = FloatingFundingBasis(
         value="3M_NOK",
@@ -505,7 +679,9 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month NIBOR",
-        screen_page="NIBRO",
+        screen_page="ORIBOR",
+        calendars_for_payment=[CALENDARS.OSLO],
+        fixing_info=NIBOR,
     )
     NOK_6M = FloatingFundingBasis(
         value="6M_NOK",
@@ -518,7 +694,9 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="6 month NIBOR",
-        screen_page="NIBRO",
+        screen_page="ORIBOR",
+        calendars_for_payment=[CALENDARS.OSLO],
+        fixing_info=NIBOR,
     )
     NOK_FIXED = FixedFundingBasis(
         currency=CURRENCIES.NOK,
@@ -528,6 +706,7 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
         legal_label="NOK Fixed Rate",
+        calendars_for_payment=[CALENDARS.OSLO],
     )
     NOK_MS = MSFundingBasis(
         currency=CURRENCIES.NOK,
@@ -540,6 +719,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=300,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.OSLO],
     )
     CAD_3M = FloatingFundingBasis(
         value="3M_CAD",
@@ -553,6 +733,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month BA-CDOR",
         screen_page="CDOR",
+        calendars_for_payment=[CALENDARS.TORONTO],
+        fixing_info=CAD_BA_CDOR,
     )
     CAD_FIXED = FixedFundingBasis(
         currency=CURRENCIES.CAD,
@@ -562,6 +744,7 @@ class FundingBases(Constants[FundingBasis]):
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="CAD Fixed Rate",
+        calendars_for_payment=[CALENDARS.TORONTO],
     )
     CAD_MS = MSFundingBasis(
         currency=CURRENCIES.CAD,
@@ -574,6 +757,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=330,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.TORONTO],
     )
     NZD_3M = FloatingFundingBasis(
         value="3M_NZD",
@@ -587,6 +771,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month NZD-BB",
         screen_page="",
+        calendars_for_payment=[CALENDARS.AUCKLAND],
+        fixing_info=BANK_BILL_RATE,
     )
     NZD_FIXED = FixedFundingBasis(
         currency=CURRENCIES.NZD,
@@ -595,6 +781,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=350,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.AUCKLAND],
     )
     NZD_MS = MSFundingBasis(
         currency=CURRENCIES.NZD,
@@ -607,6 +794,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=360,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.AUCKLAND],
     )
     HKD_3M = FloatingFundingBasis(
         value="3M_HKD",
@@ -620,6 +808,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month HIBOR",
         screen_page="HKABHIBOR",
+        calendars_for_payment=[CALENDARS.HONG_KONG],
+        fixing_info=HIBOR,
     )
     HKD_6M = FloatingFundingBasis(
         value="6M_HKD",
@@ -633,6 +823,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="6 month HIBOR",
         screen_page="HKABHIBOR",
+        calendars_for_payment=[CALENDARS.HONG_KONG],
+        fixing_info=HIBOR,
     )
     HKD_FIXED = FixedFundingBasis(
         currency=CURRENCIES.HKD,
@@ -641,6 +833,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=370,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.HONG_KONG],
     )
     SGD_3M = FloatingFundingBasis(
         value="3M_SGD",
@@ -654,6 +847,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="3 month SIBOR",
         screen_page="ABSIRFIX01",
+        calendars_for_payment=[CALENDARS.SINGAPORE],
+        fixing_info=SIBOR,
     )
     SGD_6M = FloatingFundingBasis(
         value="6M_SGD",
@@ -667,6 +862,8 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         legal_label="6 month SIBOR",
         screen_page="ABSIRFIX01",
+        calendars_for_payment=[CALENDARS.SINGAPORE],
+        fixing_info=SIBOR,
     )
     SGD_FIXED = FixedFundingBasis(
         currency=CURRENCIES.SGD,
@@ -675,6 +872,7 @@ class FundingBases(Constants[FundingBasis]):
         sorting=375,
         adjustment=ADJUSTMENTS.ADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        calendars_for_payment=[CALENDARS.SINGAPORE],
     )
     CNH_FIXED = FixedFundingBasis(
         currency=CURRENCIES.CNH,
@@ -705,14 +903,33 @@ class FundingBases(Constants[FundingBasis]):
         currency=CURRENCIES.CZK,
         index=3,
         payment_frequency=PAYMENT_FREQUENCIES.QUARTERLY,
-        day_count=DAY_COUNTS.ACTUAL_365,
+        day_count=DAY_COUNTS.ACTUAL_360,
         sorting=383,
         label="3mPRIBOR",
         pricing=False,
-        legal_label="3 month CZK-PRIBOR-PRBO",
-        screen_page="PRBO",
+        adjustment=ADJUSTMENTS.ADJUSTED,
+        business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        legal_label="3 month PRIBOR",
+        screen_page="PRIBOR",
+        fixing_info=PRIBOR,
     )
     CZK_3M.is_callable_basis = False  # weird exception
+    CZK_6M = FloatingFundingBasis(
+        value="6M_CZK",
+        currency=CURRENCIES.CZK,
+        index=6,
+        payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        day_count=DAY_COUNTS.ACTUAL_360,
+        sorting=384,
+        label="6mPRIBOR",
+        pricing=False,
+        adjustment=ADJUSTMENTS.ADJUSTED,
+        business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        legal_label="6 month PRIBOR",
+        screen_page="PRIBOR",
+        fixing_info=PRIBOR,
+    )
+    CZK_6M.is_callable_basis = False  # weird exception
     CZK_FIXED = FixedFundingBasis(
         currency=CURRENCIES.CZK,
         payment_frequency=PAYMENT_FREQUENCIES.ANNUALLY,
@@ -731,6 +948,8 @@ class FundingBases(Constants[FundingBasis]):
         pricing=False,
         legal_label="3 month JIBAR",
         screen_page="SAFEY",
+        calendars_for_payment=[CALENDARS.JOHANNESBURG],
+        fixing_info=JIBAR,
     )
     ZAR_6M = FloatingFundingBasis(
         value="6M_ZAR",
@@ -743,6 +962,8 @@ class FundingBases(Constants[FundingBasis]):
         pricing=False,
         legal_label="6 month JIBAR",
         screen_page="SAFEY",
+        calendars_for_payment=[CALENDARS.JOHANNESBURG],
+        fixing_info=JIBAR,
     )
     ZAR_FIXED = FixedFundingBasis(
         currency=CURRENCIES.ZAR,
@@ -750,6 +971,7 @@ class FundingBases(Constants[FundingBasis]):
         day_count=DAY_COUNTS.ACTUAL_365,
         sorting=387,
         pricing=False,
+        calendars_for_payment=[CALENDARS.JOHANNESBURG],
     )
     RON_FIXED = FixedFundingBasis(
         currency=CURRENCIES.RON,
@@ -759,6 +981,7 @@ class FundingBases(Constants[FundingBasis]):
         pricing=False,
         adjustment=ADJUSTMENTS.UNADJUSTED,
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
+        calendars_for_payment=[CALENDARS.BUCHAREST],
     )
     BTP = GovieFundingBasis(
         value="BTP",
@@ -772,6 +995,7 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         # max_tenor=TENOR_45Y_VAL,
         # min_tenor=TENOR_1Y_VAL,
+        calendars_for_payment=[CALENDARS.TARGET2],
     )
     OAT = GovieFundingBasis(
         value="OAT",
@@ -785,6 +1009,7 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         # max_tenor=TENOR_45Y_VAL,
         # min_tenor=TENOR_1Y_VAL,
+        calendars_for_payment=[CALENDARS.TARGET2],
     )
     OLO = GovieFundingBasis(
         value="OLO",
@@ -798,6 +1023,7 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         # max_tenor=TENOR_45Y_VAL,
         # min_tenor=TENOR_1Y_VAL,
+        calendars_for_payment=[CALENDARS.TARGET2],
     )
     RAGB = GovieFundingBasis(
         value="RAGB",
@@ -811,6 +1037,7 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         # max_tenor=TENOR_25Y_VAL,
         # min_tenor=TENOR_1Y_VAL,
+        calendars_for_payment=[CALENDARS.TARGET2],
     )
     SPGB = GovieFundingBasis(
         value="SPGB",
@@ -824,8 +1051,10 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
         # max_tenor=TENOR_45Y_VAL,
         # min_tenor=TENOR_1Y_VAL,
+        calendars_for_payment=[CALENDARS.TARGET2],
     )
 
+    @lru_cache()
     def to_django_choices(
         self, is_callable_basis=None, pricing=None
     ) -> Tuple[Tuple[str, str]]:
@@ -858,6 +1087,7 @@ class CDFundingBases(FundingBases):
             adjustment=ADJUSTMENTS.ADJUSTED,
             business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
             sorting=60,
+            calendars_for_payment=[CALENDARS.NEW_YORK],
         )
         self.EUR_FIXED = FixedFundingBasis(
             currency=CURRENCIES.EUR,
@@ -866,6 +1096,7 @@ class CDFundingBases(FundingBases):
             adjustment=ADJUSTMENTS.ADJUSTED,
             business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
             sorting=20,
+            calendars_for_payment=[CALENDARS.TARGET2],
         )
         self.GBP_FIXED = FixedFundingBasis(
             currency=CURRENCIES.GBP,
@@ -874,6 +1105,7 @@ class CDFundingBases(FundingBases):
             sorting=100,
             adjustment=ADJUSTMENTS.ADJUSTED,
             business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+            calendars_for_payment=[CALENDARS.LONDON],
         )
 
 

@@ -23,3 +23,17 @@ class SerializerTestMixin:
         assert (
             not missing_tests
         ), f"Tests are missing for the following fields: {', '.join(missing_tests)}."
+
+
+class LruCacheTestMixin:
+    """
+    Use this to assert functions with @lru_cache.
+    """
+
+    @staticmethod
+    def assert_has_lru_cache(func):
+        """
+        Assert that the given function is decorated with @lru_cache.
+        """
+        assert hasattr(func, "cache_info") and callable(func.cache_info)
+        assert hasattr(func, "cache_clear") and callable(func.cache_clear)

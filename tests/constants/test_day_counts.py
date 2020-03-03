@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from origin_common.better_test_mixins import LruCacheTestMixin
 from origin_common.constants import DAY_COUNTS
 
 
@@ -37,7 +38,7 @@ class TestDayCountLabels(TestCase):
         assert DAY_COUNTS.THIRTY_360.label == "30/360"
 
 
-class TestDayCountOrder(TestCase):
+class TestDayCountOrder(LruCacheTestMixin, TestCase):
     def test_order(self):
         expected = [
             DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
@@ -57,6 +58,7 @@ class TestDayCountOrder(TestCase):
             (DAY_COUNTS.ACTUAL_365_NL.value, DAY_COUNTS.ACTUAL_365_NL.label),
         )
         assert DAY_COUNTS.to_django_choices() == expected
+        self.assert_has_lru_cache(DAY_COUNTS.to_django_choices)
 
 
 class TestDayCountComparisons(TestCase):

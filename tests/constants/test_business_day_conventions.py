@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from origin_common.better_test_mixins import LruCacheTestMixin
 from origin_common.constants import BUSINESS_DAY_CONVENTIONS
 
 
@@ -39,7 +40,7 @@ class TestBusinessDayConventionLabels(TestCase):
         assert label == "Half Month Modified Following"
 
 
-class TestBusinessDayConventionOrder(TestCase):
+class TestBusinessDayConventionOrder(LruCacheTestMixin, TestCase):
     def test_order(self):
         expected = [
             BUSINESS_DAY_CONVENTIONS.FOLLOWING,
@@ -69,6 +70,7 @@ class TestBusinessDayConventionOrder(TestCase):
             ),
         )
         assert BUSINESS_DAY_CONVENTIONS.to_django_choices() == expected
+        self.assert_has_lru_cache(BUSINESS_DAY_CONVENTIONS.to_django_choices)
 
 
 class TestBusinessDayConventionComparisons(TestCase):
