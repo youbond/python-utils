@@ -983,6 +983,20 @@ class FundingBases(Constants[FundingBasis]):
         business_day_convention=BUSINESS_DAY_CONVENTIONS.FOLLOWING,
         calendars_for_payment=[CALENDARS.BUCHAREST],
     )
+    UST = GovieFundingBasis(
+        value="UST",
+        currency=CURRENCIES.USD,
+        payment_frequency=PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        day_count=DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
+        sorting=389,
+        label="UST",
+        issuer_short_name="Utd Sts Amer",
+        adjustment=ADJUSTMENTS.ADJUSTED,
+        business_day_convention=BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        # max_tenor=TENOR_30Y_VAL,
+        # min_tenor=TENOR_1Y_VAL,
+        calendars_for_payment=[CALENDARS.NEW_YORK],
+    )
     BTP = GovieFundingBasis(
         value="BTP",
         currency=CURRENCIES.EUR,
