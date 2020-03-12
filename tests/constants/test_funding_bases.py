@@ -1493,6 +1493,29 @@ class TestRONFIXEDBasis(BasisTestCase):
     }
 
 
+class TestUSTBasis(BasisTestCase):
+    basis = FUNDING_BASES.UST
+    is_govie_basis = True
+    attributes = {
+        "value": "UST",
+        "currency": "USD",
+        "symbol": "$",
+        "basis_type": "govie",
+        "index": 0,
+        "payment_frequency": PAYMENT_FREQUENCIES.SEMI_ANNUALLY,
+        "day_count": DAY_COUNTS.ACTUAL_ACTUAL_ICMA,
+        "sorting": 389,
+        "label": "UST",
+        "is_callable_basis": False,
+        "issuer_short_name": "Utd Sts Amer",
+        "adjustment": ADJUSTMENTS.ADJUSTED,
+        "business_day_convention": BUSINESS_DAY_CONVENTIONS.MODIFIED_FOLLOWING,
+        # "max_tenor": TENOR_30Y_VAL,
+        # "min_tenor": TENOR_1Y_VAL,
+        "calendars_for_payment": [CALENDARS.NEW_YORK],
+    }
+
+
 class TestBTPBasis(BasisTestCase):
     basis = FUNDING_BASES.BTP
     is_govie_basis = True
